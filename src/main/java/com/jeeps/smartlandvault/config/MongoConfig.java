@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.jeeps.smartlandvault.nosql_model")
+@EnableMongoRepositories(basePackages = "com.jeeps.smartlandvault.nosql")
 public class MongoConfig {
     @Value("${smartlandvault.nosql.db}")
     private String dbName;

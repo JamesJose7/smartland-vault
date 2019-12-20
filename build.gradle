@@ -29,6 +29,7 @@ dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-web-services'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 //    runtimeOnly 'mysql:mysql-connector-java'
+    implementation 'com.google.code.gson:gson:2.8.6'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

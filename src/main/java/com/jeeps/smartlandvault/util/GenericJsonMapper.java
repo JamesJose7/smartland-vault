@@ -24,7 +24,7 @@ public class GenericJsonMapper {
             succeeded = true;
         } catch (JsonSyntaxException e) {
             // This was not a json array
-            logger.info("Failed converting json from array");
+            logger.warn("Failed converting json from array");
         }
         // If fails, convert from an object
         if (!succeeded)
@@ -34,10 +34,10 @@ public class GenericJsonMapper {
                 succeeded = true;
             } catch (JsonSyntaxException e) {
                 // This was not a json object
-                logger.info("Failed converting json from single object");
+                logger.warn("Failed converting json from single object");
             }
 
-        if (!succeeded) logger.warn("Invalid json syntax, could not map to objects");
+        if (!succeeded) logger.error("Invalid json syntax, could not map to objects");
         return result;
     }
 }

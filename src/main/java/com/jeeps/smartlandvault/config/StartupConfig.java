@@ -4,12 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
+import com.jeeps.smartlandvault.util.GenericJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,12 +26,20 @@ public class StartupConfig {
 
         // Test object with data array
         Optional<DataContainer> arrayDataContainerOptional = dataContainerRepository.findById("test-container");
-        if (arrayDataContainerOptional.isPresent()) {
+        if (arrayDataContainerOptional.isEmpty()) {
             DataContainer arrayDataContainer = new DataContainer("test-container", "containing objects");
             String json = "[{\"screamId\":\"hRmUmDIyzjJ9339t8rVz\",\"body\":\"Hello world again\",\"userHandle\":\"user\",\"createdAt\":\"2019-12-20T17:27:25.854Z\"},{\"screamId\":\"ThVNlb1hjRlspATi1YA2\",\"body\":\"Hello world\",\"userHandle\":\"user\",\"createdAt\":\"2019-12-20T17:27:18.444Z\"}]";
-            Object[] objects = gson.fromJson(json, Object[].class);
-            arrayDataContainer.setData(Arrays.asList(objects));
+            arrayDataContainer.setData(GenericJsonMapper.convertFromJsonArray(json));
             dataContainerRepository.save(arrayDataContainer);
+        }
+
+        // Test object with single json element
+        Optional<DataContainer> singleDataContainerOptional = dataContainerRepository.findById("single-container");
+        if (singleDataContainerOptional.isEmpty()) {
+            DataContainer singleContainer = new DataContainer("single-container", "This one only has one object");
+            String json = "{\"likeCount\":1,\"body\":\"Hello world again\",\"commentCount\":1,\"createdAt\":\"2019-12-20T17:27:25.854Z\",\"userHandle\":\"user\",\"userImage\":\"https://firebasestorage.googleapis.com/v0/b/socialape-8d0ee.appspot.com/o/7602692939.jpg?alt=media\",\"screamId\":\"hRmUmDIyzjJ9339t8rVz\",\"comments\":[{\"userImage\":\"https://firebasestorage.googleapis.com/v0/b/socialape-8d0ee.appspot.com/o/7602692939.jpg?alt=media\",\"screamId\":\"hRmUmDIyzjJ9339t8rVz\",\"body\":\"Don't overuse literally\",\"request\":\"user\",\"createdAt\":\"2019-12-20T17:27:54.009Z\"}]}";
+            singleContainer.setData(GenericJsonMapper.convertFromJsonArray(json));
+            dataContainerRepository.save(singleContainer);
         }
 
 

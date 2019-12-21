@@ -1,7 +1,9 @@
-package com.jeeps.smartlandvault.config;
+package com.jeeps.smartlandvault.core;
 
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
+import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
+import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventoryRepository;
 import com.jeeps.smartlandvault.util.GenericJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -15,6 +17,8 @@ public class StartupConfig {
 
     @Autowired
     private DataContainerRepository dataContainerRepository;
+    @Autowired
+    private ContainerInventoryRepository containerInventoryRepository;
 
     @EventListener(ContextRefreshedEvent.class)
     public void bootConfiguration() {
@@ -44,6 +48,7 @@ public class StartupConfig {
             dataContainerRepository.save(singleContainer);
         }
 
+        containerInventoryRepository.save(new ContainerInventory());
 
         /*
         Gson gson = new Gson();

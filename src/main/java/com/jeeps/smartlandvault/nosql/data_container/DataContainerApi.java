@@ -15,7 +15,7 @@ public class DataContainerApi {
     @Autowired
     private DataContainerRepository dataContainerRepository;
 
-    @GetMapping(value = "/dataContainer/{id}/data", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/api/v1/dataContainer/{id}/data", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getData(@PathVariable("id") String id) {
         Optional<DataContainer> containerOptional = dataContainerRepository.findById(id);
         String result = "[]";

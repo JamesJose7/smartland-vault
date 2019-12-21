@@ -1,4 +1,4 @@
-package com.jeeps.smartlandvault.config;
+package com.jeeps.smartlandvault.core;
 
 import com.mongodb.MongoClient;
 import org.springframework.beans.factory.annotation.Value;

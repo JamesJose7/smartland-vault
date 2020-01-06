@@ -48,6 +48,7 @@ public class GenericJsonMapper {
             if (list.get(0) instanceof Map) return "Object Array";
             return "Array";
         }
+        if (object instanceof Map) return "Object";
         return "Unknown";
     }
 }

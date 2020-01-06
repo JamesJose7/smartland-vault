@@ -66,8 +66,11 @@ public class ContainerController {
             treeElements.remove(""); // Remove blank from first '/'
             Map<Object, Object> dataMap = (HashMap<Object, Object>) data.get(0);
             for (String treeElement : treeElements) {
-                List<Object> list = (ArrayList<Object>) dataMap.get(treeElement);
-                dataMap = (HashMap<Object, Object>) list.get(0);
+                if (dataMap.get(treeElement) instanceof ArrayList) {
+                    List<Object> list = (ArrayList<Object>) dataMap.get(treeElement);
+                    dataMap = (HashMap<Object, Object>) list.get(0);
+                } else
+                    dataMap = (HashMap<Object, Object>) dataMap.get(treeElement);
             }
             return dataMap;
         }

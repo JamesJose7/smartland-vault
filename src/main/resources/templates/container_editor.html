@@ -22,11 +22,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="property : ${dataProperties}" th:class="${#strings.contains(property.getValue(), 'Object Array')} ? 'table-primary' : ''">
-                <td th:if="${#strings.contains(property.getValue(), 'Object Array')}">
+            <tr th:each="property : ${dataProperties}" th:class="${#strings.contains(property.getValue(), 'Object')} ? 'table-primary' : ''">
+                <td th:if="${#strings.contains(property.getValue(), 'Object')}">
                     <a th:href="@{${containerUrl}(tree=${treeView + property.getKey()})}" th:text="${property.getKey()}"></a>
                 </td>
-                <td th:unless="${#strings.contains(property.getValue(), 'Object Array')}" th:text="${property.getKey()}"></td>
+                <td th:unless="${#strings.contains(property.getValue(), 'Object')}" th:text="${property.getKey()}"></td>
                 <td th:text="${property.getValue()}"></td>
             </tr>
         </tbody>

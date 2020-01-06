@@ -10,6 +10,10 @@
 
     <p>Raw data <a target="_blank" th:href="@{${rawDataLink}}">link</a></p>
 
+    <div class="data-tree-controls">
+        <p th:text="${treeView}"></p>
+        <a th:if="${previousTreeUrl}" th:href="@{${containerUrl}(tree=${previousTreeUrl})}" class="btn-outline-primary btn">Back</a>
+    </div>
     <table class="table table-hover">
         <thead class="thead-dark">
             <tr>
@@ -18,8 +22,11 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="property : ${dataProperties}" th:class="${#strings.contains(property.getValue(), 'Array')} ? 'table-primary' : ''">
-                <td th:text="${property.getKey()}"></td>
+            <tr th:each="property : ${dataProperties}" th:class="${#strings.contains(property.getValue(), 'Object Array')} ? 'table-primary' : ''">
+                <td th:if="${#strings.contains(property.getValue(), 'Object Array')}">
+                    <a th:href="@{${containerUrl}(tree=${treeView + property.getKey()})}" th:text="${property.getKey()}"></a>
+                </td>
+                <td th:unless="${#strings.contains(property.getValue(), 'Object Array')}" th:text="${property.getKey()}"></td>
                 <td th:text="${property.getValue()}"></td>
             </tr>
         </tbody>

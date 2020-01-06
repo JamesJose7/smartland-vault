@@ -5,10 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class GenericJsonMapper {
     private static Logger logger = LoggerFactory.getLogger(GenericJsonMapper.class);
@@ -45,7 +42,12 @@ public class GenericJsonMapper {
         if (object instanceof Integer) return "Integer";
         if (object instanceof Double) return "Decimal";
         if (object instanceof String) return "String";
-        if (object instanceof ArrayList) return "Array";
+        if (object instanceof ArrayList) {
+            List<Object> list = (ArrayList<Object>) object;
+            if (list.isEmpty()) return "Empty Array";
+            if (list.get(0) instanceof Map) return "Object Array";
+            return "Array";
+        }
         return "Unknown";
     }
 }

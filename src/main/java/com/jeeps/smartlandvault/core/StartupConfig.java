@@ -2,7 +2,6 @@ package com.jeeps.smartlandvault.core;
 
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
 import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventoryRepository;
 import com.jeeps.smartlandvault.util.GenericJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,21 @@ public class StartupConfig {
             dataContainerRepository.save(singleContainer);
         }
 
-        containerInventoryRepository.save(new ContainerInventory());
+
+        // Test object with multiple data arrays
+        Optional<DataContainer> multipleArraysDataContainerOptional = dataContainerRepository.findById("multi-array-container");
+        if (multipleArraysDataContainerOptional.isEmpty()) {
+            String json = "{ \"likeCount\":1, \"body\":\"Hello world again\", \"commentCount\":1, \"createdAt\":\"2019-12-20T17:27:25.854Z\", \"userHandle\":\"user\", \"userImage\":\"https://firebasestorage.googleapis.com/v0/b/socialape-8d0ee.appspot.com/o/7602692939.jpg?alt=media\", \"screamId\":\"hRmUmDIyzjJ9339t8rVz\", \"comments\":[ { \"userImage\":\"https://firebasestorage.googleapis.com/v0/b/socialape-8d0ee.appspot.com/o/7602692939.jpg?alt=media\", \"screamId\":\"hRmUmDIyzjJ9339t8rVz\", \"body\":\"Don't overuse literally\", \"request\":\"user\", \"createdAt\":\"2019-12-20T17:27:54.009Z\", \"data\":[ { \"name\":\"James\", \"age\":23, \"acquaintances\":[ { \"name\":\"Peter\", \"age\":30 }, { \"name\":\"Max\", \"age\":20 } ], \"hobbies\":[ \"this\", \"probably\", \"wont\", \"work\" ] } ] } ] }";
+            DataContainer arrayDataContainer = new DataContainer("multi-array-container",
+                    "containing multiple arrays",
+                    "test",
+                    "http://example.org",
+                    true,
+                    GenericJsonMapper.convertFromJsonArray(json));
+            dataContainerRepository.save(arrayDataContainer);
+        }
+
+//        containerInventoryRepository.save(new ContainerInventory());
 
         /*
         Gson gson = new Gson();

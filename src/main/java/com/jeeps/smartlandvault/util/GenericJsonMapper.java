@@ -40,4 +40,12 @@ public class GenericJsonMapper {
         if (!succeeded) logger.error("Invalid json syntax, could not map to objects");
         return result;
     }
+
+    public static String detectType(Object object) {
+        if (object instanceof Integer) return "Integer";
+        if (object instanceof Double) return "Decimal";
+        if (object instanceof String) return "String";
+        if (object instanceof ArrayList) return "Array";
+        return "Unknown";
+    }
 }

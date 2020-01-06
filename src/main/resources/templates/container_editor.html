@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head(${dataContainer.name})"></head>
+<body>
+
+<div th:replace="layout :: nav"></div>
+<div class="container">
+    <h1 th:text="${dataContainer.name}"></h1>
+    <h4 th:text="|ID: ${dataContainer.id}|"></h4>
+
+    <p>Raw data <a target="_blank" th:href="@{${rawDataLink}}">link</a></p>
+
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Property name</th>
+                <th scope="col">Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="property : ${dataProperties}" th:class="${#strings.contains(property.getValue(), 'Array')} ? 'table-primary' : ''">
+                <td th:text="${property.getKey()}"></td>
+                <td th:text="${property.getValue()}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="layout :: scripts"></div>
+</body>
+</html>

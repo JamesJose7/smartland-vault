@@ -2,7 +2,6 @@ package com.jeeps.smartlandvault.web.controller;
 
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
-import com.jeeps.smartlandvault.util.GenericJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -12,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.jeeps.smartlandvault.util.GenericJsonMapper.detectType;
+import static com.jeeps.smartlandvault.util.GenericJsonMapper.getSelectedTree;
 
 @Controller
 public class ContainerController {
@@ -32,47 +35,32 @@ public class ContainerController {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
         if (dataContainerOptional.isEmpty())
             throw new ResourceNotFoundException();
+        // Container and it's data
         DataContainer dataContainer = dataContainerOptional.get();
-        model.addAttribute("dataContainer", dataContainer);
-        // Get attribute names
-        Map<String, String> properties = new HashMap<>();
         List<Object> data = dataContainer.getData();
+        // Get attribute names and types
+        Map<String, String> properties = new HashMap<>();
         if (!data.isEmpty()) {
-            getSelectedTree(data, currentTree).forEach((key, value) -> properties.put(
-                    key.toString(),
-                    GenericJsonMapper.detectType(value)));
+           properties = getSelectedTree(data, currentTree).entrySet().stream()
+                    .collect(Collectors.toMap(
+                            e -> e.getKey().toString(),
+                            e -> detectType(e.getValue())));
         }
-        // Append '/' if it does not have one at the end
+        // Append '/' to the tree if it does not have one at the end
         if (currentTree.charAt(currentTree.length()-1) != '/')
             currentTree += "/";
+        // Get previous tree for navigation
         if (currentTree.split("/").length > 0) {
             List<String> treeElements = new ArrayList<>(Arrays.asList(currentTree.split("/")));
             treeElements.remove(treeElements.size()-1);
             String previousTreeUrl = String.join("/", treeElements);
             model.addAttribute("previousTreeUrl", previousTreeUrl.isBlank() ? "/" : previousTreeUrl);
         }
+        model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("treeView", currentTree);
         model.addAttribute("containerUrl", String.format("/container/%s", dataContainer.getId()));
         model.addAttribute("dataProperties", properties);
         model.addAttribute("rawDataLink", String.format("/api/v1/dataContainer/%s/data", dataContainer.getId()));
         return "container_editor";
-    }
-
-    private Map<Object, Object> getSelectedTree(List<Object> data, String tree) {
-        if (tree.equals("/"))
-            return (HashMap<Object, Object>) data.get(0);
-        else {
-            List<String> treeElements = new ArrayList<>(Arrays.asList(tree.split("/")));
-            treeElements.remove(""); // Remove blank from first '/'
-            Map<Object, Object> dataMap = (HashMap<Object, Object>) data.get(0);
-            for (String treeElement : treeElements) {
-                if (dataMap.get(treeElement) instanceof ArrayList) {
-                    List<Object> list = (ArrayList<Object>) dataMap.get(treeElement);
-                    dataMap = (HashMap<Object, Object>) list.get(0);
-                } else
-                    dataMap = (HashMap<Object, Object>) dataMap.get(treeElement);
-            }
-            return dataMap;
-        }
     }
 }

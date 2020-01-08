@@ -51,4 +51,22 @@ public class GenericJsonMapper {
         if (object instanceof Map) return "Object";
         return "Unknown";
     }
+
+    public static Map<Object, Object> getSelectedTree(List<Object> data, String tree) {
+        if (tree.equals("/"))
+            return (HashMap<Object, Object>) data.get(0);
+        else {
+            List<String> treeElements = new ArrayList<>(Arrays.asList(tree.split("/")));
+            treeElements.remove(""); // Remove blank from first '/'
+            Map<Object, Object> dataMap = (HashMap<Object, Object>) data.get(0);
+            for (String treeElement : treeElements) {
+                if (dataMap.get(treeElement) instanceof ArrayList) {
+                    List<Object> list = (ArrayList<Object>) dataMap.get(treeElement);
+                    dataMap = (HashMap<Object, Object>) list.get(0);
+                } else
+                    dataMap = (HashMap<Object, Object>) dataMap.get(treeElement);
+            }
+            return dataMap;
+        }
+    }
 }

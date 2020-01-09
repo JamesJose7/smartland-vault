@@ -3,6 +3,7 @@ package com.jeeps.smartlandvault.web.controller;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
 import com.jeeps.smartlandvault.sql.container_stock.Item;
+import com.jeeps.smartlandvault.sql.container_stock.ItemRepository;
 import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
 import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventoryRepository;
 import org.slf4j.Logger;
@@ -35,6 +36,8 @@ public class ContainerController {
     private DataContainerRepository dataContainerRepository;
     @Autowired
     private ContainerInventoryRepository containerInventoryRepository;
+    @Autowired
+    private ItemRepository itemRepository;
 
     @RequestMapping("/containers")
     public String containersBrowser(Model model) {
@@ -98,6 +101,9 @@ public class ContainerController {
         List<Item> items = createItemsFromProperties(properties, containerInventory);
         containerInventory.setItems(items);
         containerInventory.setMainDataProperty(selectedTree);
+        // Delete previous items before saving
+        itemRepository.deleteAllByContainerInventory(containerInventory);
+        // Save or update inventory
         containerInventoryRepository.save(containerInventory);
         logger.info(String.format("Request :%s | from id: %s", selectedTree, containerId));
         return String.format("redirect:/container/%s", containerId);

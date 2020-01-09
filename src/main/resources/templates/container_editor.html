@@ -11,8 +11,12 @@
     <p>Raw data <a target="_blank" th:href="@{${rawDataLink}}">link</a></p>
 
     <div class="data-tree-controls">
-        <p th:text="${treeView}"></p>
-        <a th:if="${previousTreeUrl}" th:href="@{${containerUrl}(tree=${previousTreeUrl})}" class="btn-outline-primary btn">Back</a>
+        <p th:text="${currentTree}"></p>
+        <a th:if="${previousTreeUrl}" th:href="@{${containerUrl}(tree=${previousTreeUrl},navigating=true)}" class="btn-outline-primary btn">Back</a>
+        <form th:action="${selectMainDataUrl}" method="post">
+            <input type="hidden" id="tree" name="tree" th:value="${currentTree}">
+            <button type="submit" class="btn btn-primary">Select this data as the main data</button>
+        </form>
     </div>
     <table class="table table-hover">
         <thead class="thead-dark">
@@ -24,7 +28,7 @@
         <tbody>
             <tr th:each="property : ${dataProperties}" th:class="${#strings.contains(property.getValue(), 'Object')} ? 'table-primary' : ''">
                 <td th:if="${#strings.contains(property.getValue(), 'Object')}">
-                    <a th:href="@{${containerUrl}(tree=${treeView + property.getKey()})}" th:text="${property.getKey()}"></a>
+                    <a th:href="@{${containerUrl}(tree=${currentTree + property.getKey()},navigating=true)}" th:text="${property.getKey()}"></a>
                 </td>
                 <td th:unless="${#strings.contains(property.getValue(), 'Object')}" th:text="${property.getKey()}"></td>
                 <td th:text="${property.getValue()}"></td>

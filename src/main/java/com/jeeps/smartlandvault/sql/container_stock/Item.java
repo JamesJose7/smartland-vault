@@ -15,6 +15,14 @@ public class Item extends BaseEntity {
     private String propertyName;
     private String dataType;
 
+    public Item() {}
+
+    public Item(ContainerInventory containerInventory, String propertyName, String dataType) {
+        this.containerInventory = containerInventory;
+        this.propertyName = propertyName;
+        this.dataType = dataType;
+    }
+
     public ContainerInventory getContainerInventory() {
         return containerInventory;
     }

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GenericJsonMapper {
     private static Logger logger = LoggerFactory.getLogger(GenericJsonMapper.class);
@@ -68,5 +69,12 @@ public class GenericJsonMapper {
             }
             return dataMap;
         }
+    }
+
+    public static Map<String, String> getPropertiesFromTree(Map<Object, Object> tree) {
+        return tree.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> e.getKey().toString(),
+                        e -> detectType(e.getValue())));
     }
 }

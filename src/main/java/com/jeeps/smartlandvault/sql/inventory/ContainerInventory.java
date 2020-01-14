@@ -1,7 +1,8 @@
-package com.jeeps.smartlandvault.sql.sorted_containers;
+package com.jeeps.smartlandvault.sql.inventory;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jeeps.smartlandvault.core.BaseEntity;
-import com.jeeps.smartlandvault.sql.container_stock.Item;
+import com.jeeps.smartlandvault.sql.item.Item;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ public class ContainerInventory extends BaseEntity {
     private String name;
     private String mainDataProperty; // Used to point to the main data object, in case there's an array inside the json object that contains the actual data
     @OneToMany(mappedBy = "containerInventory", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Item> items;
 
     public ContainerInventory() {}

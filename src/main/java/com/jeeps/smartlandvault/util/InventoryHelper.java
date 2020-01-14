@@ -1,7 +1,7 @@
 package com.jeeps.smartlandvault.util;
 
-import com.jeeps.smartlandvault.sql.container_stock.Item;
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
+import com.jeeps.smartlandvault.sql.item.Item;
+import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 
 import java.util.List;
 import java.util.Map;

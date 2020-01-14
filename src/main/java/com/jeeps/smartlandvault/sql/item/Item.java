@@ -1,7 +1,8 @@
-package com.jeeps.smartlandvault.sql.container_stock;
+package com.jeeps.smartlandvault.sql.item;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.jeeps.smartlandvault.core.BaseEntity;
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
+import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -11,9 +12,12 @@ import javax.persistence.ManyToOne;
 public class Item extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "containerInventory_id")
+    @JsonBackReference
     private ContainerInventory containerInventory;
     private String propertyName;
     private String dataType;
+    private String name;
+    private String description;
 
     public Item() {}
 
@@ -45,5 +49,21 @@ public class Item extends BaseEntity {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -1,4 +1,4 @@
-package com.jeeps.smartlandvault.sql.sorted_containers;
+package com.jeeps.smartlandvault.sql.inventory;
 
 import org.springframework.data.repository.CrudRepository;
 

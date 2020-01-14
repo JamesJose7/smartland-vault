@@ -2,10 +2,10 @@ package com.jeeps.smartlandvault.web.controller;
 
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
-import com.jeeps.smartlandvault.sql.container_stock.Item;
-import com.jeeps.smartlandvault.sql.container_stock.ItemRepository;
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventoryRepository;
+import com.jeeps.smartlandvault.sql.item.Item;
+import com.jeeps.smartlandvault.sql.item.ItemRepository;
+import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
+import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
@@ -39,13 +36,13 @@ public class ContainerController {
     @Autowired
     private ItemRepository itemRepository;
 
-    @RequestMapping("/containers")
+    @GetMapping("/containers")
     public String containersBrowser(Model model) {
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
         return "containers_browser";
     }
 
-    @RequestMapping("/container/{id}")
+    @GetMapping("/container/{id}")
     public String viewContainer(@PathVariable("id") String id,
                                 @RequestParam(name = "tree", defaultValue = "/", required = false) String currentTree,
                                 @RequestParam(name = "navigating", defaultValue = "false", required = false) String isNavigating,
@@ -85,7 +82,7 @@ public class ContainerController {
         return "container_editor";
     }
 
-    @RequestMapping(value = "/container/{id}/main-data", method = RequestMethod.POST)
+    @PostMapping(value = "/container/{id}/main-data")
     public String selectMainDataTree(RedirectAttributes redirectAttributes,
                                      @PathVariable(name = "id") String containerId,
                                      @RequestParam(name = "tree") String selectedTree) {

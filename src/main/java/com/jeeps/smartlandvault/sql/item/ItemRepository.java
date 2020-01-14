@@ -1,6 +1,6 @@
-package com.jeeps.smartlandvault.sql.container_stock;
+package com.jeeps.smartlandvault.sql.item;
 
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventory;
+import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 

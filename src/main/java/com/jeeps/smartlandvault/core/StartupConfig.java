@@ -2,7 +2,7 @@ package com.jeeps.smartlandvault.core;
 
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
-import com.jeeps.smartlandvault.sql.sorted_containers.ContainerInventoryRepository;
+import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
 import com.jeeps.smartlandvault.util.GenericJsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;

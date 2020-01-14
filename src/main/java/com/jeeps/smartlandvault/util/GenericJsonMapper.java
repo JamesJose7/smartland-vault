@@ -9,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GenericJsonMapper {
-    private static Logger logger = LoggerFactory.getLogger(GenericJsonMapper.class);
+    private static Logger logger = LoggerFactory.getLogger(GenericJsonMapper.class.getName());
 
     public static List<Object> convertFromJsonArray(String json) {
         Gson gson = new Gson();

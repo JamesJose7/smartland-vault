@@ -78,7 +78,7 @@ public class ContainerController {
         model.addAttribute("dataProperties", properties);
         model.addAttribute("containerUrl", String.format("/container/%s", dataContainer.getId()));
         model.addAttribute("selectMainDataUrl", String.format("%s/container/%s/main-data", contextPath, dataContainer.getId()));
-        model.addAttribute("rawDataLink", String.format("/api/v1/dataContainer/%s/data", dataContainer.getId()));
+        model.addAttribute("rawDataLink", String.format("/api/v1/dataContainers/%s/data", dataContainer.getId()));
         return "container_editor";
     }
 

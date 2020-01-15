@@ -51,17 +51,17 @@ public class ExcelSheetReader {
         // List for rows
         List<Map<String, Object>> tableData = new ArrayList<>();
         // Get first row for column names
-        List<String> columnNames = new ArrayList<>();
         if (!iterator.hasNext()) throw new IncorrectExcelFormatException("Excel sheet does not have any rows");
-        iterator.next().cellIterator().forEachRemaining(cell -> columnNames.add(cell.getStringCellValue()));
+        Map<Integer, String> columnNames = new HashMap<>();
+        for (Cell currentCell : iterator.next())
+            columnNames.put(currentCell.getColumnIndex(), currentCell.getStringCellValue().trim().replaceAll(" ", "_"));
         if (columnNames.isEmpty()) throw new IncorrectExcelFormatException("Excel sheet does not have any columns");
 
         while (iterator.hasNext()) {
-            int columnPosition = 0;
             Map<String, Object> rowData = new HashMap<>();
             Row currentRow = iterator.next();
             for (Cell currentCell : currentRow) {
-                String columnName = columnNames.get(columnPosition);
+                String columnName = columnNames.get(currentCell.getColumnIndex());
                 // Get objects based on data type
                 switch (currentCell.getCellType()) {
                     case STRING:
@@ -82,7 +82,6 @@ public class ExcelSheetReader {
                     default:
                         rowData.put(columnName, null);
                 }
-                columnPosition++;
             }
             // Add row to table data
             tableData.add(rowData);
@@ -112,7 +111,7 @@ public class ExcelSheetReader {
                     .filter(map -> map.getOrDefault(METADATA_ELEMENT_TYPE, "").equals(METADATA_COLUMN_ELEMENT))
                     .map(map -> {
                         Item item = new Item();
-                        item.setPropertyName(map.getOrDefault(METADATA_ELEMENT_ID, ""));
+                        item.setPropertyName(map.getOrDefault(METADATA_ELEMENT_ID, "").trim().replaceAll(" ", "_"));
                         item.setDataType(map.getOrDefault(METADATA_DATATYPE_COLUMN, ""));
                         item.setName(map.getOrDefault(METADATA_NAME_COLUMN, ""));
                         item.setDescription(map.getOrDefault(METADATA_DESCRIPTION_COLUMN, ""));

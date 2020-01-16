@@ -112,13 +112,14 @@ public class ContainerController {
         // Get the inventory or create it if it does not exist
         ContainerInventory containerInventory = containerInventoryRepository.findByContainerId(containerId)
                 .orElse(new ContainerInventory(containerId, "unnamed", selectedTree));
+        containerInventory.setMainDataProperty(selectedTree);
         // Create items from selected tree
         Map<String, String> properties = getPropertiesFromTree(getSelectedTree(data, selectedTree));
         List<Item> items = createItemsFromProperties(properties, containerInventory);
-        containerInventory.setItems(items);
-        containerInventory.setMainDataProperty(selectedTree);
         // Delete previous items before saving
-        itemRepository.deleteAllByContainerInventory(containerInventory);
+        if (containerInventory.getItems() != null)
+            itemRepository.deleteAllByContainerInventory(containerInventory);
+        containerInventory.setItems(items);
         // Save or update inventory
         containerInventoryRepository.save(containerInventory);
         logger.info(String.format("Request :%s | from id: %s", selectedTree, containerId));

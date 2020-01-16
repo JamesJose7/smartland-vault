@@ -1,0 +1,41 @@
+/* Base styles */
+
+body {
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.section-border {
+    border-bottom: 1px solid rgba(190,190,190,.5);
+    margin-bottom: 16px;
+    padding-bottom: 4px;
+}
+
+.info-item {
+    width: 100%;
+    font-size: .8em;
+    font-weight: bold;
+    color: rgba(0,0,0,.5);
+}
+
+.info-item span {
+    display: inline-block;
+    width: 100%;
+    margin-top: 2px;
+    font-size: 1.7em;
+    font-weight: normal;
+    color: black;
+}
+
+/* Container page */
+
+.container-active i, .container-inactive i {
+    vertical-align: middle;
+}
+
+.container-active {
+    color: rgba(92,184,92, 0.54);
+}
+
+.container-inactive {
+    color: rgba(50,50,50, 0.26);
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head(${dataContainer.name})"></head>
+<body>
+
+<div th:replace="layout :: nav"></div>
+<div class="container">
+
+    <div class="row pt-2 pb-2">
+        <div class="col-lg-10">
+            <h1 th:text="${dataContainer.name}"></h1>
+        </div>
+        <div class="col-lg-2">
+            <p th:if="${dataContainer.active}" class="container-active text-lg-right">Active <i class="material-icons">check_circle</i></p>
+            <p th:unless="${dataContainer.active}" class="container-inactive text-lg-right">Inactive <i class="material-icons">check_circle_outline</i></p>
+        </div>
+    </div>
+    <h2 class="section-border">About</h2>
+    <div class="row">
+        <div class="col-lg-6">
+            <p class="info-item">Identifier<span th:text="${dataContainer.id}"></span></p>
+            <p class="info-item">Type<span th:text="${dataContainer.originType}"></span></p>
+            <p class="info-item">Publisher<span th:text="${dataContainer.publisher == null ? 'No publisher' : dataContainer.publisher}"></span></p>
+        </div>
+        <div class="col-lg-6">
+            <p th:if="${dataContainer.sourceUrl == null}" class="info-item">Source<span>No source</span></p>
+            <p th:unless="${dataContainer.sourceUrl == null}" class="info-item">Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}" target="_blank"></a></span></p>
+            <p class="info-item">Data count<span th:text="${dataContainer.dataCount}"></span></p>
+            <p class="info-item">Property count<span th:text="${dataContainer.propertyCount}"></span></p>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <a th:href="@{${browseDataLink}}" class="btn btn-outline-dark d-block w-100">Browse Data</a>
+        </div>
+        <div class="col-md-6">
+            <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Raw Data</a>
+        </div>
+    </div>
+
+    <div th:if="${inventory != null}" class="mb-5">
+        <h2 class="section-border">Inventory</h2>
+        <div class="row">
+            <div class="col-lg-6">
+                <p class="info-item">Name<span th:text="${inventory.name}"></span></p>
+            </div>
+            <div class="col-lg-6">
+                <p class="info-item">Main data property<span th:text="${inventory.mainDataProperty}"></span></p>
+            </div>
+        </div>
+
+        <table class="table table-hover">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Property</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Data type</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${inventory.items}">
+                <td th:text="${item.propertyName}"></td>
+                <td th:text="${item.name}"></td>
+                <td th:text="${item.description}"></td>
+                <td th:text="${item.dataType}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div th:unless="${inventory != null}" class="mb-5">
+        <p>There is no inventory created for this container.</p>
+        <p>Please create one by <a th:href="@{${browseDataLink}}">browsing it's data</a> and selecting the main object to track</p>
+    </div>
+</div>
+
+<div th:replace="layout :: scripts"></div>
+</body>
+</html>

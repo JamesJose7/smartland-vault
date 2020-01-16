@@ -38,12 +38,32 @@ public class ContainerController {
 
     @GetMapping("/containers")
     public String containersBrowser(Model model) {
+        //TODO: Button for adding new containers (via REST endpoint or Excel)
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
         return "containers_browser";
     }
 
     @GetMapping("/container/{id}")
     public String viewContainer(@PathVariable("id") String id,
+            Model model) {
+        Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
+        if (dataContainerOptional.isEmpty())
+            throw new ResourceNotFoundException();
+        // Container and it's data
+        DataContainer dataContainer = dataContainerOptional.get();
+        // Show inventory when it has one
+        ContainerInventory containerInventory = containerInventoryRepository.findByContainerId(dataContainer.getId()).orElse(null);
+
+        model.addAttribute("dataContainer", dataContainer);
+        model.addAttribute("inventory", containerInventory);
+        model.addAttribute("browseDataLink", String.format("/container/%s/browseData", dataContainer.getId()));
+        model.addAttribute("rawDataLink", String.format("/api/v1/dataContainers/%s/data", dataContainer.getId()));
+        return "container_home";
+    }
+
+
+    @GetMapping("/container/{id}/browseData")
+    public String viewContainerData(@PathVariable("id") String id,
                                 @RequestParam(name = "tree", defaultValue = "/", required = false) String currentTree,
                                 @RequestParam(name = "navigating", defaultValue = "false", required = false) String isNavigating,
                                 Model model) {
@@ -76,10 +96,9 @@ public class ContainerController {
         model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("currentTree", currentTree);
         model.addAttribute("dataProperties", properties);
-        model.addAttribute("containerUrl", String.format("/container/%s", dataContainer.getId()));
+        model.addAttribute("containerUrl", String.format("/container/%s/browseData", dataContainer.getId()));
         model.addAttribute("selectMainDataUrl", String.format("%s/container/%s/main-data", contextPath, dataContainer.getId()));
-        model.addAttribute("rawDataLink", String.format("/api/v1/dataContainers/%s/data", dataContainer.getId()));
-        return "container_editor";
+        return "container_data_browser";
     }
 
     @PostMapping(value = "/container/{id}/main-data")
@@ -103,6 +122,6 @@ public class ContainerController {
         // Save or update inventory
         containerInventoryRepository.save(containerInventory);
         logger.info(String.format("Request :%s | from id: %s", selectedTree, containerId));
-        return String.format("redirect:/container/%s", containerId);
+        return String.format("redirect:/container/%s/browseData", containerId);
     }
 }

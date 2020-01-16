@@ -14,6 +14,7 @@
                 <th scope="col">ID</th>
                 <th scope="col">Name</th>
                 <th scope="col">Data count</th>
+                <th scope="col">Origin</th>
                 <th scope="col">URL</th>
             </tr>
         </thead>
@@ -22,6 +23,7 @@
                 <td><a th:href="@{|/container/${dataContainer.id}|}" th:text="${dataContainer.id}"></a></td>
                 <td th:text="${dataContainer.name}"></td>
                 <td th:text="${dataContainer.dataCount}"></td>
+                <td th:text="${dataContainer.originType}"></td>
                 <td><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}"></a></td>
             </tr>
         </tbody>

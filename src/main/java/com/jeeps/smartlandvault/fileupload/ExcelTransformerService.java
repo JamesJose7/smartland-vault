@@ -36,7 +36,10 @@ public class ExcelTransformerService {
         try {
             ExcelTableData excelTableData = ExcelSheetReader.parseWorkBook(inputStream);
             // Save data container
-            DataContainer dataContainer = new DataContainer(id == null ? generateRandomId() : id, name);
+            DataContainer dataContainer = new DataContainer(
+                    id == null ? generateRandomId() : id,
+                    name,
+                    DataContainer.ORIGIN_EXCEL);
             Gson gson = new Gson();
             String tableAsJson = gson.toJson(excelTableData.getColumns());
             dataContainer.setData(GenericJsonMapper.convertFromJsonArray(tableAsJson));

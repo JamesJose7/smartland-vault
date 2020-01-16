@@ -9,6 +9,9 @@ import java.util.List;
 
 @Document
 public class DataContainer {
+    public static final String ORIGIN_EXCEL = "Excel";
+    public static final String ORIGIN_REST_API = "Rest API";
+
     @Id
     private String id;
     private String name;
@@ -17,14 +20,16 @@ public class DataContainer {
     private boolean isActive;
     private int dataCount;
     private int propertyCount;
+    private String originType;
     @JsonIgnore
     private List<Object> data;
 
     public DataContainer() {}
 
-    public DataContainer(String id, String name) {
+    public DataContainer(String id, String name, String originType) {
         this.id = id;
         this.name = name;
+        this.originType = originType;
     }
 
     public DataContainer(String id, String name, String publisher, String sourceUrl, boolean isActive, List<Object> data) {
@@ -90,6 +95,14 @@ public class DataContainer {
 
     public void setPropertyCount(int propertyCount) {
         this.propertyCount = propertyCount;
+    }
+
+    public String getOriginType() {
+        return originType;
+    }
+
+    public void setOriginType(String originType) {
+        this.originType = originType;
     }
 
     public List<Object> getData() {

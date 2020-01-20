@@ -26,7 +26,70 @@ body {
     color: black;
 }
 
+.btn-icon i {
+    vertical-align: middle;
+}
+
+/* Containers browser page */
+.add-container-btn i {
+    font-size: 15px;
+}
+
+/* Select container type page */
+.container-type-btn {
+    display: block;
+    text-decoration: none;
+    width: 100%;
+    padding: 16px 12px;
+    border: 1px solid rgba(150,150,150,.8);
+    border-top: none;
+    border-left: none;
+    transition: all 1s;
+    color: #3f5c6c;
+}
+
+.container-type-btn:hover {
+    color: #1f2e36;
+    text-decoration: none;
+    box-shadow: 7px 7px 4px -2px rgba(0,0,0,.2);
+}
+
+.container-type-btn h1 {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.container-type-btn ul {
+    font-size: 1em;
+    padding-left: 23px;
+}
+
+.container-type-btn img {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.excel-container li, .rest-container li {
+    list-style: square;
+}
+
+.excel-container {
+    margin: 0 auto 0 0;
+    border-color: rgb(46,125,50);
+    background-color: rgba(46,125,50,.3);
+}
+
+.rest-container {
+    margin: 0 0 0 auto;
+    border-color: rgb(176,211,240);
+    background-color: rgba(176,211,240,.3);
+}
+
 /* Container page */
+
+.container-active, .container-inactive {
+    margin-top: 10px;
+}
 
 .container-active i, .container-inactive i {
     vertical-align: middle;
@@ -38,4 +101,19 @@ body {
 
 .container-inactive {
     color: rgba(50,50,50, 0.26);
+}
+
+/* Media queries */
+@media (min-width: 992px) {
+    .container-type-btn {
+        width: 98%;
+    }
+
+    .excel-container {
+        margin: 0 auto 0 0;
+    }
+
+    .rest-container {
+        margin: 0 0 0 auto;
+    }
 }

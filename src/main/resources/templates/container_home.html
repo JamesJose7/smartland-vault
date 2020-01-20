@@ -6,7 +6,7 @@
 <div th:replace="layout :: nav"></div>
 <div class="container">
 
-    <div class="row pt-2 pb-2">
+    <div class="row mt-3 pb-2">
         <div class="col-lg-10">
             <h1 th:text="${dataContainer.name}"></h1>
         </div>
@@ -34,7 +34,7 @@
         <div class="col-md-6">
             <a th:href="@{${browseDataLink}}" class="btn btn-outline-dark d-block w-100">Browse Data</a>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6 mt-2 mt-md-0">
             <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Raw Data</a>
         </div>
     </div>
@@ -50,24 +50,26 @@
             </div>
         </div>
 
-        <table class="table table-hover">
-            <thead class="thead-dark">
-            <tr>
-                <th scope="col">Property</th>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col">Data type</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${inventory.items}">
-                <td th:text="${item.propertyName}"></td>
-                <td th:text="${item.name}"></td>
-                <td th:text="${item.description}"></td>
-                <td th:text="${item.dataType}"></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Property</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Data type</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${inventory.items}">
+                    <td th:text="${item.propertyName}"></td>
+                    <td th:text="${item.name}"></td>
+                    <td th:text="${item.description}"></td>
+                    <td th:text="${item.dataType}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <div th:unless="${inventory != null}" class="mb-5">
         <p>There is no inventory created for this container.</p>

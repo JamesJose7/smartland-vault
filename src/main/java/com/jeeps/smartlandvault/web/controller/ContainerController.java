@@ -38,9 +38,16 @@ public class ContainerController {
 
     @GetMapping("/containers")
     public String containersBrowser(Model model) {
-        //TODO: Button for adding new containers (via REST endpoint or Excel)
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
+        model.addAttribute("addNewContainerLink", "/container/selectType");
         return "containers_browser";
+    }
+
+    @GetMapping("/container/selectType")
+    public String selectContainerType(Model model) {
+        model.addAttribute("excelTypeUrl", "/container/add/excel");
+        model.addAttribute("restTypeUrl", "/container/add/rest");
+        return "select_container_type";
     }
 
     @GetMapping("/container/{id}")

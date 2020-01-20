@@ -30,6 +30,32 @@ body {
     vertical-align: middle;
 }
 
+.submit-btn {
+    width: 100%;
+}
+
+.flash p {
+    display: block;
+    padding: 10px 15px;
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3);
+    cursor: pointer;
+}
+
+.flash i {
+    vertical-align: middle;
+    font-size: 15px;
+}
+
+.flash .failure {
+    background-color: firebrick;
+}
+
+.flash .success {
+    background-color: rgb(46,125,50);
+}
+
 /* Containers browser page */
 .add-container-btn i {
     font-size: 15px;

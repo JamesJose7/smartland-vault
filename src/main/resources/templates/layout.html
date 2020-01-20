@@ -38,9 +38,13 @@
     </nav>
 </div>
 
-<div th:fragment="flash" th:if="${flash != null}" class="mt-3 row">
-    <!--<i class="material-icons col-1" data-close="">close</i>-->
-    <div th:classappend="${#strings.toLowerCase(flash.status)}" th:text="${flash.message}" class="flash col"></div>
+<div th:fragment="flash" th:if="${flash != null}" class="mt-3 row flash">
+    <div class="col-12">
+        <p th:classappend="${#strings.toLowerCase(flash.status)}">
+            <i class="material-icons" data-close="">close</i>
+            <span th:text="${flash.message}"></span>
+        </p>
+    </div>
 </div>
 
 
@@ -49,6 +53,11 @@
     <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.js}"></script>
     <script th:src="@{/webjars/popper.js/1.14.3/umd/popper.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/4.3.0/js/bootstrap.min.js}"></script>
+    <script>
+        $('.flash').find('p').click(function () {
+            $('.flash').remove()
+        })
+    </script>
 </div>
 
 </body>

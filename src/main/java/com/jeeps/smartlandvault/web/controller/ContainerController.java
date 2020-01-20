@@ -1,11 +1,15 @@
 package com.jeeps.smartlandvault.web.controller;
 
+import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
+import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
 import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
+import com.jeeps.smartlandvault.util.ExcelSheetReader;
+import com.jeeps.smartlandvault.web.FlashMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
@@ -28,6 +33,9 @@ public class ContainerController {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
+    @Autowired
+    private ExcelTransformerService excelTransformerService;
 
     @Autowired
     private DataContainerRepository dataContainerRepository;
@@ -48,6 +56,49 @@ public class ContainerController {
         model.addAttribute("excelTypeUrl", "/container/add/excel");
         model.addAttribute("restTypeUrl", "/container/add/rest");
         return "select_container_type";
+    }
+
+    @GetMapping("/container/add/excel")
+    public String addExcelContainer(Model model) {
+        model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
+        return "excel_upload_form";
+    }
+
+    // Web Forms
+    @PostMapping("container/add/excel/fileUpload")
+    public String uploadExcelTableWeb(
+            @RequestParam(name = "file") MultipartFile file,
+            @RequestParam(name = "id", required = false) String id,
+            @RequestParam(name = "name", required = false) String name,
+            RedirectAttributes redirectAttributes
+    ) throws Exception {
+        String failureRedirect = "redirect:/container/add/excel";
+        String successRedirect = "redirect:/containers";
+
+        name = name == null ? "No name" : name;
+        // Check MIME type to match the accepted ones
+        if (file.getContentType() == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Could not determine file's MIME type, please try again", FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
+        if (!ExcelSheetReader.isExcelMimeType(file.getContentType())) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Only Excel spreadsheets are supported, please try again", FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
+        // Hand input stream to excel service
+        try {
+            excelTransformerService.transform(file.getInputStream(), id, name);
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
+            return successRedirect;
+        } catch (IncorrectExcelFormatException e) {
+            logger.error(e.getMessage());
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage(e.getMessage(), FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
     }
 
     @GetMapping("/container/{id}")

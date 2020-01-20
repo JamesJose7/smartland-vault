@@ -131,6 +131,10 @@ body {
 
 /* Media queries */
 @media (min-width: 992px) {
+    .submit-btn {
+        width: auto;
+    }
+
     .container-type-btn {
         width: 98%;
     }

@@ -30,12 +30,12 @@ public class ExcelTransformerService {
     @Autowired
     private ItemRepository itemRepository;
 
-    public void transform(InputStream inputStream, String id, String name) throws IncorrectExcelFormatException {
+    public void transform(InputStream inputStream, String id, String name, String publisher, String sourceUrl) throws IncorrectExcelFormatException {
         // Get Table data
         try {
             ExcelTableData excelTableData = ExcelSheetReader.parseWorkBook(inputStream);
             // Save data container
-            DataContainer dataContainer = new DataContainer(id, name, DataContainer.ORIGIN_EXCEL);
+            DataContainer dataContainer = new DataContainer(id, name, DataContainer.ORIGIN_EXCEL, publisher, sourceUrl);
             Gson gson = new Gson();
             String tableAsJson = gson.toJson(excelTableData.getColumns());
             dataContainer.setData(GenericJsonMapper.convertFromJsonArray(tableAsJson));

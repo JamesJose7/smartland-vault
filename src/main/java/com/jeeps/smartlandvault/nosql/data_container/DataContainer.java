@@ -28,7 +28,7 @@ public class DataContainer {
     public DataContainer() {}
 
     public DataContainer(String id, String name, String originType) {
-        this.id = id;
+        setId(id);
         this.name = name;
         this.originType = originType;
     }
@@ -40,6 +40,14 @@ public class DataContainer {
         this.sourceUrl = sourceUrl;
         this.isActive = isActive;
         setData(data);
+    }
+
+    public DataContainer(String id, String name, String originType, String publisher, String sourceUrl) {
+        setId(id);
+        this.name = name;
+        this.publisher = publisher;
+        this.sourceUrl = sourceUrl;
+        this.originType = originType;
     }
 
     public String getId() {

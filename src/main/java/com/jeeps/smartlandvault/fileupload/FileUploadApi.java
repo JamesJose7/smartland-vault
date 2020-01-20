@@ -24,7 +24,9 @@ public class FileUploadApi {
     public ResponseEntity<String> uploadExcelTable(
             @RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam(name = "id", required = false) String id,
-            @RequestParam(name = "name", required = false) String name
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "publisher", required = false) String publisher,
+            @RequestParam(name = "sourceUrl", required = false) String sourceUrl
             ) throws Exception {
         JSONObject json = new JSONObject();
         // Handle file not included and notify user
@@ -44,7 +46,7 @@ public class FileUploadApi {
         }
         // Hand input stream to excel service
         try {
-            excelTransformerService.transform(file.getInputStream(), id, name);
+            excelTransformerService.transform(file.getInputStream(), id, name, publisher, sourceUrl);
             json.put("message", "File uploaded successfully");
             return ResponseEntity.ok(json.toString());
         } catch (IncorrectExcelFormatException e) {

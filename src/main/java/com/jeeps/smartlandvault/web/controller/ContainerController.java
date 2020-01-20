@@ -71,6 +71,8 @@ public class ContainerController {
             @RequestParam(name = "file") MultipartFile file,
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "publisher", required = false) String publisher,
+            @RequestParam(name = "sourceUrl", required = false) String sourceUrl,
             RedirectAttributes redirectAttributes
     ) throws Exception {
         String failureRedirect = "redirect:/container/add/excel";
@@ -90,7 +92,7 @@ public class ContainerController {
         }
         // Hand input stream to excel service
         try {
-            excelTransformerService.transform(file.getInputStream(), id, name);
+            excelTransformerService.transform(file.getInputStream(), id, name, publisher, sourceUrl);
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
             return successRedirect;
@@ -113,6 +115,8 @@ public class ContainerController {
             @RequestParam(name = "restUrl") String restUrl,
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "publisher", required = false) String publisher,
+            @RequestParam(name = "sourceUrl", required = false) String sourceUrl,
             RedirectAttributes redirectAttributes) {
         String failureRedirect = "redirect:/container/add/rest";
         String successRedirect = "redirect:/containers";

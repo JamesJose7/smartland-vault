@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class ExcelTransformerService {
@@ -36,10 +35,7 @@ public class ExcelTransformerService {
         try {
             ExcelTableData excelTableData = ExcelSheetReader.parseWorkBook(inputStream);
             // Save data container
-            DataContainer dataContainer = new DataContainer(
-                    id == null ? generateRandomId() : id,
-                    name,
-                    DataContainer.ORIGIN_EXCEL);
+            DataContainer dataContainer = new DataContainer(id, name, DataContainer.ORIGIN_EXCEL);
             Gson gson = new Gson();
             String tableAsJson = gson.toJson(excelTableData.getColumns());
             dataContainer.setData(GenericJsonMapper.convertFromJsonArray(tableAsJson));
@@ -67,10 +63,5 @@ public class ExcelTransformerService {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
-    }
-
-    private String generateRandomId() {
-        Random random = new Random();
-        return "CONTAINER-" + random.nextInt(10000000);
     }
 }

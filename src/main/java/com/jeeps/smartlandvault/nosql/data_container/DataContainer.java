@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Document
 public class DataContainer {
@@ -33,7 +34,7 @@ public class DataContainer {
     }
 
     public DataContainer(String id, String name, String publisher, String sourceUrl, boolean isActive, List<Object> data) {
-        this.id = id;
+        setId(id);
         this.name = name;
         this.publisher = publisher;
         this.sourceUrl = sourceUrl;
@@ -46,7 +47,10 @@ public class DataContainer {
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id == null)
+            this.id = generateRandomId();
+        else
+            this.id = id.isEmpty() ? generateRandomId() : id;
     }
 
     public String getName() {
@@ -121,5 +125,10 @@ public class DataContainer {
         return "DataContainer{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    private String generateRandomId() {
+        Random random = new Random();
+        return "CONTAINER-" + random.nextInt(10000000);
     }
 }

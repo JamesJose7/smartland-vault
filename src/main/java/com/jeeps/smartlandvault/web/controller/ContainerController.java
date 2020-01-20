@@ -48,20 +48,20 @@ public class ContainerController {
     public String containersBrowser(Model model) {
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
         model.addAttribute("addNewContainerLink", "/container/selectType");
-        return "containers_browser";
+        return "containers/containers_browser";
     }
 
     @GetMapping("/container/selectType")
     public String selectContainerType(Model model) {
         model.addAttribute("excelTypeUrl", "/container/add/excel");
         model.addAttribute("restTypeUrl", "/container/add/rest");
-        return "select_container_type";
+        return "containers/select_container_type";
     }
 
     @GetMapping("/container/add/excel")
     public String addExcelContainer(Model model) {
         model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
-        return "excel_upload_form";
+        return "containers/excel_upload_form";
     }
 
     // Web Forms
@@ -116,7 +116,7 @@ public class ContainerController {
         model.addAttribute("inventory", containerInventory);
         model.addAttribute("browseDataLink", String.format("/container/%s/browseData", dataContainer.getId()));
         model.addAttribute("rawDataLink", String.format("/api/v1/dataContainers/%s/data", dataContainer.getId()));
-        return "container_home";
+        return "containers/container_home";
     }
 
 
@@ -156,7 +156,7 @@ public class ContainerController {
         model.addAttribute("dataProperties", properties);
         model.addAttribute("containerUrl", String.format("/container/%s/browseData", dataContainer.getId()));
         model.addAttribute("selectMainDataUrl", String.format("%s/container/%s/main-data", contextPath, dataContainer.getId()));
-        return "container_data_browser";
+        return "containers/container_data_browser";
     }
 
     @PostMapping(value = "/container/{id}/main-data")

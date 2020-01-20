@@ -9,6 +9,7 @@ import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
+import com.jeeps.smartlandvault.util.UrlUtils;
 import com.jeeps.smartlandvault.web.FlashMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,33 @@ public class ContainerController {
                     new FlashMessage(e.getMessage(), FlashMessage.Status.FAILURE));
             return failureRedirect;
         }
+    }
+
+    @GetMapping("/container/add/rest")
+    public String addRestContainer(Model model) {
+        model.addAttribute("uploadRestUrl", String.format("%s/container/add/rest/upload", contextPath));
+        return "containers/rest_upload_form";
+    }
+
+    @PostMapping("container/add/rest/upload")
+    public String uploadRestEndpointWeb(
+            @RequestParam(name = "restUrl") String restUrl,
+            @RequestParam(name = "id", required = false) String id,
+            @RequestParam(name = "name", required = false) String name,
+            RedirectAttributes redirectAttributes) {
+        String failureRedirect = "redirect:/container/add/rest";
+        String successRedirect = "redirect:/containers";
+
+        if (!UrlUtils.isValidUrl(restUrl)) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Please enter a valid URL", FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
+
+        // TODO: Add a service to extract and store the contents of the rest Endpoint
+        redirectAttributes.addFlashAttribute("flash",
+                new FlashMessage("REST container addded successfully", FlashMessage.Status.SUCCESS));
+        return successRedirect;
     }
 
     @GetMapping("/container/{id}")

@@ -61,6 +61,23 @@ body {
     font-size: 15px;
 }
 
+/* Data browser page */
+
+.main-data-form {
+    text-align: right;
+    display: inline-block;
+}
+
+.data-tree-controls i {
+    vertical-align: middle;
+}
+
+.data-tree-controls p {
+    width: calc(100% - 109px);
+    text-align: left;
+    opacity: .9 !important;
+}
+
 /* Select container type page */
 .container-type-btn {
     display: block;
@@ -130,6 +147,10 @@ body {
 }
 
 /* Media queries */
+@media (min-width: 992px) {
+    /* Data browser page */
+}
+
 @media (min-width: 992px) {
     .submit-btn {
         width: auto;

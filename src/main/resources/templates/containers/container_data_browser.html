@@ -5,16 +5,26 @@
 
 <div th:replace="layout :: nav"></div>
 <div class="container">
-    <h1 th:text="${dataContainer.name}"></h1>
-    <h4 th:text="|ID: ${dataContainer.id}|"></h4>
+    <div class="row mt-3 pb-2">
+        <div class="col-12">
+            <h1 th:text="${dataContainer.name}"></h1>
+        </div>
+    </div>
 
-    <div class="data-tree-controls">
-        <p th:text="${currentTree}"></p>
-        <a th:if="${previousTreeUrl}" th:href="@{${containerUrl}(tree=${previousTreeUrl},navigating=true)}" class="btn-outline-primary btn">Back</a>
-        <form th:action="${selectMainDataUrl}" method="post">
-            <input type="hidden" id="tree" name="tree" th:value="${currentTree}">
-            <button type="submit" class="btn btn-primary">Select this data as the main data</button>
-        </form>
+    <div class="data-tree-controls row mb-3">
+        <div class="col-12">
+            <a th:classappend="${#strings.equals(currentTree, '/') ? 'disabled' : ''}" th:href="@{${containerUrl}(tree=${previousTreeUrl},navigating=true)}" class="btn-dark btn">
+                <i class="material-icons">arrow_upward</i>
+            </a>
+            <form th:action="${selectMainDataUrl}" method="post" class="main-data-form">
+                <input type="hidden" id="tree" name="tree" th:value="${currentTree}">
+                <button id="mainDataBtn" type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Will select this object as the main data">
+                    <i th:if="${isMainDataSelected}" class="material-icons">bookmark</i>
+                    <i th:unless="${isMainDataSelected}" class="material-icons">bookmark_border</i>
+                </button>
+            </form>
+            <p class="btn btn-outline-dark disabled m-0" th:text="${currentTree}"></p>
+        </div>
     </div>
     <div class="table-responsive">
         <table class="table table-hover">
@@ -38,5 +48,10 @@
 </div>
 
 <div th:replace="layout :: scripts"></div>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
 </body>
 </html>

@@ -163,11 +163,11 @@ public class ContainerController {
         // Container and it's data
         DataContainer dataContainer = dataContainerOptional.get();
         // Check if it has an inventory and change the default tree accordingly
-        if (isNavigating.equals("false")) {
-            Optional<ContainerInventory> optionalInventory = containerInventoryRepository.findByContainerId(id);
-            if (optionalInventory.isPresent())
-                currentTree = optionalInventory.get().getMainDataProperty();
-        }
+        ContainerInventory inventory = containerInventoryRepository.findByContainerId(id)
+                .orElse(null);
+        if (isNavigating.equals("false") && inventory != null)
+                currentTree = inventory.getMainDataProperty();
+
         // Get attribute names and types
         List<Object> data = dataContainer.getData();
         Map<String, String> properties = new HashMap<>();
@@ -183,8 +183,15 @@ public class ContainerController {
             String previousTreeUrl = String.join("/", treeElements);
             model.addAttribute("previousTreeUrl", previousTreeUrl.isBlank() ? "/" : previousTreeUrl);
         }
+        // Check if the current tree is the main data
+        boolean isMainDataSelected = false;
+        if (inventory != null)
+            if (inventory.getMainDataProperty().equals(currentTree))
+                isMainDataSelected = true;
+
         model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("currentTree", currentTree);
+        model.addAttribute("isMainDataSelected", isMainDataSelected);
         model.addAttribute("dataProperties", properties);
         model.addAttribute("containerUrl", String.format("/container/%s/browseData", dataContainer.getId()));
         model.addAttribute("selectMainDataUrl", String.format("%s/container/%s/main-data", contextPath, dataContainer.getId()));

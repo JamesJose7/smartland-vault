@@ -1,37 +1,103 @@
-## Welcome to GitHub Pages
+# Authors
 
-You can use the [editor on GitHub](https://github.com/JamesJose7/smartland-vault/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+- [José Eguiguren](https://github.com/JamesJose7/) (developer)
+- [Nelson Piedra](https://investigacion.utpl.edu.ec/es/nopiedra) (supervisor)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# [SmartLand](https://smartland.utpl.edu.ec/) Vault
 
-### Markdown
+Project that aims to centralize, disambiguate, and link multiple data sources. Excel workbooks and REST endpoints are supported as of right now.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Table of Contents
 
-```markdown
-Syntax highlighted code block
+- [Configuration required](#configuration-required)
+- [Demo](#demo)
+  - [Excel demo](#excel)
+  - [REST endpoint demo](#rest-endpoint)
 
-# Header 1
-## Header 2
-### Header 3
+## Configuration required
 
-- Bulleted
-- List
+This is a Spring Web Java project. It uses both a relational and non-relational database. To configure the connections to them, locally edit the following properties under `src/main/resources/application.properties`
 
-1. Numbered
-2. List
+#### Relational database config
 
-**Bold** and _Italic_ and `Code` text
+By default it uses a mysql database. Create one and change the connection properties if needed
 
-[Link](url) and ![Image](src)
+Default config:
+```
+smartlandvault.sql.datasource.driver=com.mysql.cj.jdbc.Driver
+smartlandvault.sql.datasource.jdbcUrl=jdbc:mysql://localhost:3306/smartlandvault?useLegacyDatetimeCode=false&serverTimezone=UTC
+smartlandvault.sql.datasource.username=root
+smartlandvault.sql.datasource.password=
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+#### Non-relational database config
 
-### Jekyll Themes
+A mongodb database is required. Create one and change the connection properties if needed
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/JamesJose7/smartland-vault/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Default config:
+```
+smartlandvault.nosql.host=192.168.99.100
+smartlandvault.nosql.port=32768
+smartlandvault.nosql.db=smartlandvault
+```
 
-### Support or Contact
+## Demo
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+This demonstrates the process of uploading Excel workbooks and REST endpoints to the application.
+
+### Excel
+
+Make sure your data table has the name of the columns in the first row. Example: 
+
+![table](https://imgur.com/Z4rTTjK.png)
+
+(Optional) Create a second sheet in the workbook to describe the metadata with the following format:
+
+![metadata](https://imgur.com/pvBCIFl.png)
+
+Select **+ Add container**
+
+![e1](https://imgur.com/CRQysOr.png)
+
+Select **Upload an Excel Workbook**
+
+![e2](https://imgur.com/eiRYNBR.png)
+
+Fill out the form and once uploaded, click on the ID of the newly created container
+
+![e3](https://imgur.com/IhMxSCb.png)
+
+
+shows the dataset's information
+
+![e4](https://imgur.com/a8FFcZW.png)
+
+**Browse Data** will show the dataset's columns and their metadata. Clicking on **Raw Data** will open the REST endpoint where the data can now be accesed from.
+
+![e5](https://imgur.com/0noM52w.png)
+
+### REST endpoint
+
+Select **+ Add container**
+
+![r1](https://imgur.com/CRQysOr.png)
+
+Select **Register a REST API endpoint**
+
+![r2](https://imgur.com/eiRYNBR.png)
+
+Fill out the form and once uploaded, click on the ID of the newly created container
+
+![r3](https://imgur.com/neuoFS4.png)
+
+This page shows the dataset's information
+
+![r4](https://imgur.com/r4EeBvl.png)
+
+**Browse Data** on REST endpoints can navigate through the JSON data tree and select a the desired object as the main data property
+
+![r5](https://imgur.com/RlQwo90.png)
+
+**Raw Data** will open the REST endpoint where the data can now be accesed from.
+
+![r6](https://imgur.com/LlIhi9Q.png)

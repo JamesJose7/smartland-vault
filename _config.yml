@@ -1,1 +1,3 @@
 theme: jekyll-theme-cayman
+title: SmartLand Vault
+description: Project that aims to centralize, disambiguate, and link multiple data sources. Excel workbooks and REST endpoints are supported as of right now.

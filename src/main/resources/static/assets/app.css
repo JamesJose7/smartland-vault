@@ -1,7 +1,9 @@
 /* Base styles */
 
 body {
-    font-family: 'Nunito Sans', sans-serif;
+    /*font-family: 'Nunito Sans', sans-serif;*/
+    font-family: 'Lato', sans-serif;
+
 }
 
 .section-border {
@@ -154,10 +156,6 @@ body {
 @media (min-width: 992px) {
     .submit-btn {
         width: auto;
-    }
-
-    .container-type-btn {
-        width: 98%;
     }
 
     .excel-container {

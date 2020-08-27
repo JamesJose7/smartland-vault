@@ -4,6 +4,7 @@ import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
+import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
 import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
@@ -37,6 +38,8 @@ public class ContainerController {
 
     @Autowired
     private ExcelTransformerService excelTransformerService;
+    @Autowired
+    private RestExtractorService restExtractorService;
 
     @Autowired
     private DataContainerRepository dataContainerRepository;
@@ -128,6 +131,7 @@ public class ContainerController {
         }
 
         // TODO: Add a service to extract and store the contents of the rest Endpoint
+        restExtractorService.extractRestData(restUrl, id, name, publisher, sourceUrl);
         redirectAttributes.addFlashAttribute("flash",
                 new FlashMessage("REST container addded successfully", FlashMessage.Status.SUCCESS));
         return successRedirect;

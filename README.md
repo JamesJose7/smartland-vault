@@ -7,6 +7,13 @@
 
 Project that aims to centralize, disambiguate, and link multiple data sources. Excel workbooks and REST endpoints are supported as of right now.
 
+## Table of Contents
+
+- [Configuration required](#configuration-required)
+- [Demo](#demo)
+  - [Excel demo](#excel)
+  - [REST endpoint demo](#rest-endpoint)
+
 ## Configuration required
 
 This is a Spring Web Java project. It uses both a relational and non-relational database. To configure the connections to them, locally edit the following properties under `src/main/resources/application.properties`

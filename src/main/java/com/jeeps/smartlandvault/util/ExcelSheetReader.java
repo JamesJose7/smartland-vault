@@ -4,6 +4,9 @@ import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTableData;
 import com.jeeps.smartlandvault.nosql.table_file.TableFile;
 import com.jeeps.smartlandvault.sql.item.Item;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,14 +44,21 @@ public class ExcelSheetReader {
     }
 
     public static ExcelTableData parseWorkBook(InputStream inputStream, String extension) throws FileNotFoundException, IOException, IncorrectExcelFormatException {
-        Workbook workbook = null;
+        // Check whether Excel or CSV
+        if (extension.equals(TableFile.CSV_FILE))
+            return parseCsvFile(inputStream);
+        else if (extension.equals(TableFile.EXCEL_FILE) || extension.equals(TableFile.OLD_EXCEL_FILE))
+            return parseExcelFile(inputStream, extension);
+        else // Return if there is no compatible exception
+            throw new IncorrectExcelFormatException("File not supported");
+    }
+
+    private static ExcelTableData parseExcelFile(InputStream inputStream, String extension) throws IOException, IncorrectExcelFormatException  {
+        Workbook workbook;
         if (extension.equals(TableFile.EXCEL_FILE))
             workbook = new XSSFWorkbook(inputStream);
-        else if (extension.equals(TableFile.OLD_EXCEL_FILE))
+        else
             workbook = new HSSFWorkbook(inputStream);
-        // Return if there is no compatible exception
-        if (workbook == null)
-            throw new IncorrectExcelFormatException("File not supported");
 
         // Parse data sheet
         Sheet dataSheet;
@@ -143,5 +154,37 @@ public class ExcelSheetReader {
         }
 
         return excelTableData;
+    }
+
+    private static ExcelTableData parseCsvFile(InputStream inputStream) throws IOException, IncorrectExcelFormatException {
+        CSVParser parser = CSVParser.parse(inputStream, StandardCharsets.UTF_8, CSVFormat.DEFAULT);
+        List<CSVRecord> records = parser.getRecords();
+        if (records.size() < 2) throw new IncorrectExcelFormatException("CSV file does not have enough rows");
+        // Separate records from columns
+        List<CSVRecord> columns = records.subList(0, 1);
+        records = records.subList(1, records.size());
+
+        // List for rows
+        List<Map<String, Object>> tableData = new ArrayList<>();
+        // Get column names
+        Map<Integer, String> columnNames = new HashMap<>();
+        int counter = 0;
+        for (String column : columns.get(0)) {
+            columnNames.put(counter, column.trim().replaceAll(" ", "_"));
+            counter++;
+        }
+
+        for (CSVRecord row : records) {
+            Map<String, Object> rowData = new HashMap<>();
+            int columnCounter = 0;
+            for (String currentCell : row) {
+                String columnName = columnNames.get(columnCounter);
+                rowData.put(columnName, TypeUtils.parseType(currentCell));
+                columnCounter++;
+            }
+            tableData.add(rowData);
+        }
+
+        return new ExcelTableData(tableData);
     }
 }

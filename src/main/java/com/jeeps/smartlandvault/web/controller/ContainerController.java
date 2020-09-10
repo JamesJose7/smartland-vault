@@ -4,13 +4,15 @@ import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
+import com.jeeps.smartlandvault.nosql.table_file.TableFile;
+import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
 import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
-import com.jeeps.smartlandvault.sql.item.Item;
-import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
+import com.jeeps.smartlandvault.sql.item.Item;
+import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
 import com.jeeps.smartlandvault.util.UrlUtils;
 import com.jeeps.smartlandvault.web.FlashMessage;
@@ -21,7 +23,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -53,6 +58,9 @@ public class ContainerController {
 
     @Autowired
     private ObservatoriesService observatoriesService;
+
+    @Autowired
+    private TableFileService tableFileService;
 
     @GetMapping("/containers")
     public String containersBrowser(Model model) {
@@ -110,11 +118,15 @@ public class ContainerController {
         }
         // Hand input stream to excel service
         try {
-            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl);
+            // Upload file to mongodb
+            String fileId = tableFileService.addTableFile("mockupFile", TableFile.EXCEL_FILE, file);
+            String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
+            // Transform excel
+            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl, fileUrl);
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
             return successRedirect;
-        } catch (IncorrectExcelFormatException e) {
+        } catch (IncorrectExcelFormatException | IOException e) {
             logger.error(e.getMessage());
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage(e.getMessage(), FlashMessage.Status.FAILURE));

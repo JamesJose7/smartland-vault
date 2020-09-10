@@ -18,6 +18,7 @@ public class DataContainer {
     private String name;
     private String observatory;
     private int year;
+    private String fileUrl;
     private String publisher;
     private String sourceUrl;
     private boolean isActive;
@@ -44,11 +45,12 @@ public class DataContainer {
         setData(data);
     }
 
-    public DataContainer(String id, String name, String observatory, int year, String originType, String publisher, String sourceUrl) {
+    public DataContainer(String id, String name, String observatory, int year, String fileUrl, String originType, String publisher, String sourceUrl) {
         setId(id);
         this.name = name;
         this.observatory = observatory;
         this.year = year;
+        this.fileUrl = fileUrl;
         this.publisher = publisher;
         this.sourceUrl = sourceUrl;
         this.originType = originType;
@@ -95,6 +97,14 @@ public class DataContainer {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public String getPublisher() {

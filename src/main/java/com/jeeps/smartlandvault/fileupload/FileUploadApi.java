@@ -1,11 +1,14 @@
 package com.jeeps.smartlandvault.fileupload;
 
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
+import com.jeeps.smartlandvault.nosql.table_file.TableFile;
+import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +20,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadApi {
     private static Logger logger = LoggerFactory.getLogger(FileUploadApi.class.getName());
 
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
+
     @Autowired
     private ExcelTransformerService excelTransformerService;
+
+    @Autowired
+    private TableFileService tableFileService;
 
     @PostMapping(value = "api/v1/fileUpload", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadExcelTable(
@@ -48,7 +57,11 @@ public class FileUploadApi {
         }
         // Hand input stream to excel service
         try {
-            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl);
+            // Upload file to mongodb
+            String fileId = tableFileService.addTableFile("mockupFile", TableFile.EXCEL_FILE, file);
+            String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
+            // Transform excel
+            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl, fileUrl);
             json.put("message", "File uploaded successfully");
             return ResponseEntity.ok(json.toString());
         } catch (IncorrectExcelFormatException e) {

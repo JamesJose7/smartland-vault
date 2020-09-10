@@ -25,6 +25,8 @@ public class FileUploadApi {
             @RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "observatory") String observatory,
+            @RequestParam(name = "year") int year,
             @RequestParam(name = "publisher", required = false) String publisher,
             @RequestParam(name = "sourceUrl", required = false) String sourceUrl
             ) throws Exception {
@@ -46,7 +48,7 @@ public class FileUploadApi {
         }
         // Hand input stream to excel service
         try {
-            excelTransformerService.transform(file.getInputStream(), id, name, publisher, sourceUrl);
+            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl);
             json.put("message", "File uploaded successfully");
             return ResponseEntity.ok(json.toString());
         } catch (IncorrectExcelFormatException e) {

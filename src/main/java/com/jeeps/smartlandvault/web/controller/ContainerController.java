@@ -4,6 +4,8 @@ import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
+import com.jeeps.smartlandvault.observatories.ObservatoriesService;
+import com.jeeps.smartlandvault.observatories.Observatory;
 import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
 import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.*;
 
 import static com.jeeps.smartlandvault.util.GenericJsonMapper.getPropertiesFromTree;
@@ -48,6 +51,9 @@ public class ContainerController {
     @Autowired
     private ItemRepository itemRepository;
 
+    @Autowired
+    private ObservatoriesService observatoriesService;
+
     @GetMapping("/containers")
     public String containersBrowser(Model model) {
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
@@ -65,6 +71,13 @@ public class ContainerController {
     @GetMapping("/container/add/excel")
     public String addExcelContainer(Model model) {
         model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
+        // Get list of observatories
+        try {
+            model.addAttribute("observatories", observatoriesService.getObservatories());
+        } catch (IOException e) {
+            model.addAttribute("observatories", new ArrayList<Observatory>());
+            logger.error("Could not retrieve observatories from API", e);
+        }
         return "containers/excel_upload_form";
     }
 
@@ -74,6 +87,8 @@ public class ContainerController {
             @RequestParam(name = "file") MultipartFile file,
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "observatory") String observatory,
+            @RequestParam(name = "year") int year,
             @RequestParam(name = "publisher", required = false) String publisher,
             @RequestParam(name = "sourceUrl", required = false) String sourceUrl,
             RedirectAttributes redirectAttributes
@@ -95,7 +110,7 @@ public class ContainerController {
         }
         // Hand input stream to excel service
         try {
-            excelTransformerService.transform(file.getInputStream(), id, name, publisher, sourceUrl);
+            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl);
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
             return successRedirect;
@@ -147,6 +162,15 @@ public class ContainerController {
         DataContainer dataContainer = dataContainerOptional.get();
         // Show inventory when it has one
         ContainerInventory containerInventory = containerInventoryRepository.findByContainerId(dataContainer.getId()).orElse(null);
+        // Get observatory data if present
+        if (dataContainer.getObservatory() != null) {
+            try {
+                Observatory observatory = observatoriesService.getObservatory(dataContainer.getObservatory());
+                model.addAttribute("observatoryData", observatory);
+            } catch (IOException e) {
+                logger.error("Error retrieving observatory's details", e);
+            }
+        }
 
         model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("inventory", containerInventory);

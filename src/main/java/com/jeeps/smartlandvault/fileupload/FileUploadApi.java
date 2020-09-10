@@ -1,9 +1,9 @@
 package com.jeeps.smartlandvault.fileupload;
 
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
-import com.jeeps.smartlandvault.nosql.table_file.TableFile;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,10 +58,12 @@ public class FileUploadApi {
         // Hand input stream to excel service
         try {
             // Upload file to mongodb
-            String fileId = tableFileService.addTableFile("mockupFile", TableFile.EXCEL_FILE, file);
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String fileId = tableFileService.addTableFile("mockupFile", fileExtension, file);
             String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
             // Transform excel
-            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl, fileUrl);
+            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl,
+                    fileUrl, fileExtension);
             json.put("message", "File uploaded successfully");
             return ResponseEntity.ok(json.toString());
         } catch (IncorrectExcelFormatException e) {

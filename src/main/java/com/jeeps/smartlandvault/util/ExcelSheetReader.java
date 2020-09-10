@@ -2,7 +2,9 @@ package com.jeeps.smartlandvault.util;
 
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTableData;
+import com.jeeps.smartlandvault.nosql.table_file.TableFile;
 import com.jeeps.smartlandvault.sql.item.Item;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -37,8 +39,16 @@ public class ExcelSheetReader {
         }
     }
 
-    public static ExcelTableData parseWorkBook(InputStream inputStream) throws FileNotFoundException, IOException, IncorrectExcelFormatException {
-        Workbook workbook = new XSSFWorkbook(inputStream);
+    public static ExcelTableData parseWorkBook(InputStream inputStream, String extension) throws FileNotFoundException, IOException, IncorrectExcelFormatException {
+        Workbook workbook = null;
+        if (extension.equals(TableFile.EXCEL_FILE))
+            workbook = new XSSFWorkbook(inputStream);
+        else if (extension.equals(TableFile.OLD_EXCEL_FILE))
+            workbook = new HSSFWorkbook(inputStream);
+        // Return if there is no compatible exception
+        if (workbook == null)
+            throw new IncorrectExcelFormatException("File not supported");
+
         // Parse data sheet
         Sheet dataSheet;
         try {

@@ -31,10 +31,10 @@ public class ExcelTransformerService {
     private ItemRepository itemRepository;
 
     public void transform(InputStream inputStream, String id, String name, String observatory, int year,
-                          String publisher, String sourceUrl, String fileUrl) throws IncorrectExcelFormatException {
+                          String publisher, String sourceUrl, String fileUrl, String extension) throws IncorrectExcelFormatException {
         // Get Table data
         try {
-            ExcelTableData excelTableData = ExcelSheetReader.parseWorkBook(inputStream);
+            ExcelTableData excelTableData = ExcelSheetReader.parseWorkBook(inputStream, extension);
             // Save data container
             DataContainer dataContainer = new DataContainer(id, name, observatory, year, fileUrl,
                                                             DataContainer.ORIGIN_EXCEL, publisher, sourceUrl);

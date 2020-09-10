@@ -4,7 +4,6 @@ import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
-import com.jeeps.smartlandvault.nosql.table_file.TableFile;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
@@ -16,6 +15,7 @@ import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
 import com.jeeps.smartlandvault.util.UrlUtils;
 import com.jeeps.smartlandvault.web.FlashMessage;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,10 +119,12 @@ public class ContainerController {
         // Hand input stream to excel service
         try {
             // Upload file to mongodb
-            String fileId = tableFileService.addTableFile("mockupFile", TableFile.EXCEL_FILE, file);
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String fileId = tableFileService.addTableFile("mockupFile", fileExtension, file);
             String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
             // Transform excel
-            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl, fileUrl);
+            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl,
+                    fileUrl, fileExtension);
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
             return successRedirect;

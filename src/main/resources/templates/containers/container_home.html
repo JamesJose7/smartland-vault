@@ -19,14 +19,14 @@
     <div class="row">
         <div class="col-lg-6">
             <p class="info-item">Identifier<span th:text="${dataContainer.id}"></span></p>
-            <p class="info-item">Observatorio<span><a th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}" target="_blank"></a></span></p>
+            <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}" target="_blank"></a></span></p>
             <p class="info-item">Type<span th:text="${dataContainer.originType}"></span></p>
             <p class="info-item">Publisher<span th:text="${dataContainer.publisher == null ? 'No publisher' : dataContainer.publisher}"></span></p>
         </div>
         <div class="col-lg-6">
             <p th:if="${dataContainer.sourceUrl == null || dataContainer.sourceUrl.isEmpty()}" class="info-item">Source<span>No source</span></p>
             <p th:unless="${dataContainer.sourceUrl == null  || dataContainer.sourceUrl.isEmpty()}" class="info-item">Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}" target="_blank"></a></span></p>
-            <p class="info-item">Año<span th:text="${dataContainer.year}"></span></p>
+            <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span th:text="${dataContainer.year}"></span></p>
             <p class="info-item">Data count<span th:text="${dataContainer.dataCount}"></span></p>
             <p class="info-item">Property count<span th:text="${dataContainer.propertyCount}"></span></p>
         </div>

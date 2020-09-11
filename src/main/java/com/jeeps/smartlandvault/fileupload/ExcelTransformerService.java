@@ -10,6 +10,7 @@ import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
 import com.jeeps.smartlandvault.util.GenericJsonMapper;
+import com.jeeps.smartlandvault.util.InventoryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class ExcelTransformerService {
             Gson gson = new Gson();
             String tableAsJson = gson.toJson(excelTableData.getColumns());
             dataContainer.setData(GenericJsonMapper.convertFromJsonArray(tableAsJson));
-            dataContainerRepository.save(dataContainer);
+
             // Save container inventory
             // Get existing inventory if it has one
             ContainerInventory containerInventory =
@@ -62,6 +63,9 @@ public class ExcelTransformerService {
                 containerInventory.setItems(items);
             }
             containerInventoryRepository.save(containerInventory);
+
+            dataContainer.setMetadata(InventoryHelper.getMetadataFromInventory(containerInventory));
+            dataContainerRepository.save(dataContainer);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

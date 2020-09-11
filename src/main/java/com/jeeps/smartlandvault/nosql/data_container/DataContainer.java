@@ -1,6 +1,7 @@
 package com.jeeps.smartlandvault.nosql.data_container;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jeeps.smartlandvault.nosql.metadata.Metadata;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -27,6 +28,8 @@ public class DataContainer {
     private String originType;
     @JsonIgnore
     private List<Object> data;
+
+    private List<Metadata> metadata;
 
     public DataContainer() {}
 
@@ -164,6 +167,14 @@ public class DataContainer {
         this.data = data;
         // update data count
         setDataCount(data.size());
+    }
+
+    public List<Metadata> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(List<Metadata> metadata) {
+        this.metadata = metadata;
     }
 
     @Override

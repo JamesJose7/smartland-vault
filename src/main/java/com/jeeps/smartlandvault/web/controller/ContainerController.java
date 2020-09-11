@@ -13,6 +13,7 @@ import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
 import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
+import com.jeeps.smartlandvault.util.InventoryHelper;
 import com.jeeps.smartlandvault.util.UrlUtils;
 import com.jeeps.smartlandvault.web.FlashMessage;
 import org.apache.commons.io.FilenameUtils;
@@ -247,7 +248,8 @@ public class ContainerController {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(containerId);
         if (dataContainerOptional.isEmpty())
             throw new ResourceNotFoundException();
-        List<Object> data = dataContainerOptional.get().getData();
+        DataContainer dataContainer = dataContainerOptional.get();
+        List<Object> data = dataContainer.getData();
         // Get the inventory or create it if it does not exist
         ContainerInventory containerInventory = containerInventoryRepository.findByContainerId(containerId)
                 .orElse(new ContainerInventory(containerId, "unnamed", selectedTree));
@@ -261,6 +263,9 @@ public class ContainerController {
         containerInventory.setItems(items);
         // Save or update inventory
         containerInventoryRepository.save(containerInventory);
+
+        dataContainer.setMetadata(InventoryHelper.getMetadataFromInventory(containerInventory));
+        dataContainerRepository.save(dataContainer);
         logger.info(String.format("Request :%s | from id: %s", selectedTree, containerId));
         return String.format("redirect:/container/%s/browseData", containerId);
     }

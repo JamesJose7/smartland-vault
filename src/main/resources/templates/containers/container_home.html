@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="row mb-5">
+    <div class="row mb-4">
         <div class="col-md-6">
             <a th:href="@{${browseDataLink}}" class="btn btn-outline-dark d-block w-100">Browse Data</a>
         </div>
@@ -40,6 +40,7 @@
             <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Raw Data</a>
         </div>
     </div>
+    <a th:href="@{${fileDownloadUrl}}" class="btn btn-outline-dark d-block w-100 mb-5">Descargar</a>
 
     <div th:if="${inventory != null}" class="mb-5">
         <h2 class="section-border">Inventory</h2>

@@ -187,6 +187,10 @@ public class ContainerController {
             }
         }
 
+        // Get download URL
+        String fileRelativeUrl = dataContainer.getFileUrl().replace(contextPath, "");
+        model.addAttribute("fileDownloadUrl", fileRelativeUrl);
+
         model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("inventory", containerInventory);
         model.addAttribute("browseDataLink", String.format("/container/%s/browseData", dataContainer.getId()));

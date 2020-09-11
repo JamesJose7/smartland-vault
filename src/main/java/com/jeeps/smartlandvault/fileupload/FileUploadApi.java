@@ -59,7 +59,7 @@ public class FileUploadApi {
         try {
             // Upload file to mongodb
             String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-            String fileId = tableFileService.addTableFile("mockupFile", fileExtension, file);
+            String fileId = tableFileService.addTableFile(name, fileExtension, file);
             String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
             // Transform excel
             excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl,

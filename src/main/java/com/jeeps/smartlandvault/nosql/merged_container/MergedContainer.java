@@ -14,6 +14,16 @@ public class MergedContainer {
     private List<String> mergedContainers;
     private DataContainer container;
 
+    public MergedContainer() {
+    }
+
+    public MergedContainer(String id, String name, List<String> mergedContainers, DataContainer container) {
+        this.id = id;
+        this.name = name;
+        this.mergedContainers = mergedContainers;
+        this.container = container;
+    }
+
     public String getId() {
         return id;
     }

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Merged containers')"></head>
+<body>
+
+<div th:replace="layout :: nav"></div>
+<div class="container">
+
+    <div th:replace="layout :: flash"></div>
+
+    <div class="row mt-3">
+        <div class="col-md-9">
+            <h1>Uniones</h1>
+        </div>
+        <div class="col-md-3 text-right pt-1">
+            <a th:href="@{${null}}" class="btn-icon add-container-btn btn btn-success">
+                <i class="material-icons">add</i>
+                Nueva unión
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <form th:action="${formUrl}" method="post" th:object="${unionForm}">
+            <input type="hidden" th:field="*{originalContainer}">
+
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Select</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="container, stat : ${candidates}">
+                    <td>
+                        <input type="checkbox" th:value="${container.id}"
+                               th:id="|container-${stat.index}|"
+                               th:field="*{newContainers[__${stat.index}__]}" class="form-check-input">
+                        <label class="form-check-label" th:for="|container-${stat.index}|"
+                               th:text="${container.name}"></label>
+                    </td>
+                    <td><a th:href="@{|/merge/${container.id}|}" th:text="${container.id}"></a></td>
+                    <td th:text="${container.name}"></td>
+                </tr>
+                </tbody>
+                <div class="text-lg-right mt-3 mb-4">
+                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Union</button>
+                </div>
+            </table>
+        </form>
+    </div>
+</div>
+
+<div th:replace="layout :: scripts"></div>
+<script>
+    $( document ).ready(function() {
+        var checkboxes = document.getElementsByTagName('input');
+        for (var i=0; i<checkboxes.length; i++)  {
+            if (checkboxes[i].type == 'checkbox')   {
+                checkboxes[i].checked = false;
+            }
+        }
+    });
+</script>
+</body>
+</html>

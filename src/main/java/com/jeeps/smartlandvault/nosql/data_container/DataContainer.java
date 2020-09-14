@@ -26,6 +26,7 @@ public class DataContainer {
     private int dataCount;
     private int propertyCount;
     private String originType;
+    private boolean isMerge;
     @JsonIgnore
     private List<Object> data;
 
@@ -76,6 +77,10 @@ public class DataContainer {
             this.id = generateRandomId();
         else
             this.id = id.isEmpty() ? generateRandomId() : id;
+    }
+
+    public void setNewUnionId() {
+        this.id = generateRandomId() + "-union";
     }
 
     public String getName() {
@@ -156,6 +161,14 @@ public class DataContainer {
 
     public void setOriginType(String originType) {
         this.originType = originType;
+    }
+
+    public boolean isMerge() {
+        return isMerge;
+    }
+
+    public void setMerge(boolean merge) {
+        isMerge = merge;
     }
 
     public List<Object> getData() {

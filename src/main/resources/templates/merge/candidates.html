@@ -24,6 +24,11 @@
         <form th:action="${formUrl}" method="post" th:object="${unionForm}">
             <input type="hidden" th:field="*{originalContainer}">
 
+            <div class="form-group">
+                <label for="nameInput">Nombre</label>
+                <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Container name" name="name" required>
+            </div>
+
             <table class="table table-hover">
                 <thead class="thead-dark">
                 <tr>
@@ -45,10 +50,10 @@
                     <td th:text="${container.name}"></td>
                 </tr>
                 </tbody>
-                <div class="text-lg-right mt-3 mb-4">
-                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Union</button>
-                </div>
             </table>
+            <div class="text-lg-right mt-3 mb-4">
+                <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Unir</button>
+            </div>
         </form>
     </div>
 </div>

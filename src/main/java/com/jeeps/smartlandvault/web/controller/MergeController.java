@@ -71,6 +71,7 @@ public class MergeController {
         unionForm.getNewContainers().removeIf(Objects::isNull);
         // Create new merged container
         DataContainer dataContainer = mergeService.performUnion(unionForm.getOriginalContainer(), unionForm.getNewContainers());
+        dataContainer.setName(unionForm.getName());
         dataContainer.setNewUnionId();
         dataContainer.setMerge(true);
         dataContainerRepository.save(dataContainer);

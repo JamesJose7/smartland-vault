@@ -68,7 +68,13 @@ public class MergeController {
 
     @PostMapping("/merge/union/create")
     public String unionContainers(RedirectAttributes redirectAttributes, UnionForm unionForm) {
+        // Check if at least one container was selected
         unionForm.getNewContainers().removeIf(Objects::isNull);
+        if (unionForm.getNewContainers().isEmpty()) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Seleccione al menos un dataset", FlashMessage.Status.FAILURE));
+            return "redirect:/merge/union?containerId=" + unionForm.getOriginalContainer().getId();
+        }
         // Create new merged container
         DataContainer dataContainer = mergeService.performUnion(unionForm.getOriginalContainer(), unionForm.getNewContainers());
         dataContainer.setName(unionForm.getName());

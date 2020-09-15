@@ -9,14 +9,8 @@
     <div th:replace="layout :: flash"></div>
 
     <div class="row mt-3">
-        <div class="col-md-9">
-            <h1>Uniones</h1>
-        </div>
-        <div class="col-md-3 text-right pt-1">
-            <a th:href="@{${null}}" class="btn-icon add-container-btn btn btn-success">
-                <i class="material-icons">add</i>
-                Nueva unión
-            </a>
+        <div class="col-md-12">
+            <h1>Nueva unión</h1>
         </div>
     </div>
 
@@ -32,21 +26,21 @@
             <table class="table table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th scope="col">Select</th>
+                    <th scope="col"></th>
                     <th scope="col">ID</th>
                     <th scope="col">Name</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr th:each="container, stat : ${candidates}">
+                <tbody class="container-options">
+                <tr th:each="container, stat : ${candidates}" class="cursor-pointer">
                     <td>
-                        <input type="checkbox" th:value="${container.id}"
-                               th:id="|container-${stat.index}|"
-                               th:field="*{newContainers[__${stat.index}__]}" class="form-check-input">
-                        <label class="form-check-label" th:for="|container-${stat.index}|"
-                               th:text="${container.name}"></label>
+                        <div class="form-check">
+                            <input type="checkbox" th:value="${container.id}"
+                                   th:id="|container-${stat.index}|"
+                                   th:field="*{newContainers[__${stat.index}__]}" class="form-check-input">
+                        </div>
                     </td>
-                    <td><a th:href="@{|/merge/${container.id}|}" th:text="${container.id}"></a></td>
+                    <td th:text="${container.id}"></td>
                     <td th:text="${container.name}"></td>
                 </tr>
                 </tbody>
@@ -60,6 +54,9 @@
 
 <div th:replace="layout :: scripts"></div>
 <script>
+    $('.container-options tr').click(function () {
+        $(this).find('td input[type=checkbox]').prop('checked', true);
+    });
     $( document ).ready(function() {
         var checkboxes = document.getElementsByTagName('input');
         for (var i=0; i<checkboxes.length; i++)  {

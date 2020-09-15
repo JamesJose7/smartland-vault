@@ -30,7 +30,7 @@
             </thead>
             <tbody>
             <tr th:each="mergedContainer : ${mergedContainers}">
-                <td><a th:href="@{|/merge/${mergedContainer.id}|}" th:text="${mergedContainer.id}"></a></td>
+                <td><a th:href="@{|/container/${mergedContainer.id}|}" th:text="${mergedContainer.id}"></a></td>
                 <td th:text="${mergedContainer.name}"></td>
             </tr>
             </tbody>

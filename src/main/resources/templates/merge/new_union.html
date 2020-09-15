@@ -18,16 +18,32 @@
         <div class="col-12">
             <form th:action="${formUrl}" method="get">
 
-                <div class="form-row">
-                    <div class="form-group col-md-12">
-                        <label for="container">Contenedores</label>
-                        <select class="form-control" id="container" name="containerId" required>
-                            <option th:each="container : ${containers}" th:value="${container.id}" th:text="${container.name}"></option>
-                        </select>
-                    </div>
-                </div>
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col"># Datos</th>
+                    </tr>
+                    </thead>
+                    <tbody class="container-options">
+                    <tr th:each="container, stat : ${containers}" class="cursor-pointer">
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="containerId"
+                                       th:id="|container-${stat.index}|"
+                                       th:value="${container.id}" required>
+                            </div>
+                        </td>
+                        <td th:text="${container.id}"></td>
+                        <td th:text="${container.name}"></td>
+                        <td th:text="${container.dataCount}"></td>
+                    </tr>
+                    </tbody>
+                </table>
                 <div class="text-lg-right mt-3 mb-4">
-                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Create</button>
+                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Siguiente</button>
                 </div>
             </form>
         </div>
@@ -35,5 +51,10 @@
 </div>
 
 <div th:replace="layout :: scripts"></div>
+<script>
+    $('.container-options tr').click(function () {
+        $(this).find('td input[type=radio]').prop('checked', true);
+    });
+</script>
 </body>
 </html>

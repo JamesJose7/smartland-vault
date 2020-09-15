@@ -58,6 +58,10 @@ body {
     background-color: rgb(46,125,50);
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* Containers browser page */
 .add-container-btn i {
     font-size: 15px;

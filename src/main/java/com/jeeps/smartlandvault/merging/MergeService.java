@@ -28,7 +28,11 @@ public class MergeService {
         return allContainers.stream()
                 .filter(container -> {
                     if (container.getMetadata() == null) return false;
+                    // Filter out containers with more columns than the selected one
                     if (container.getMetadata().size() > selectedContainer.getMetadata().size()) return false;
+                    // Filter out the selected container
+                    if (container.getId().equals(selectedContainer.getId())) return false;
+                    // Find containers with the same metadata
                     List<Metadata> equalMetadata = container.getMetadata().stream().filter(metadata ->
                             containsMetadata(selectedContainer.getMetadata(), metadata))
                             .collect(Collectors.toList());

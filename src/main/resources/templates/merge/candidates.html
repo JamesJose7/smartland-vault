@@ -55,7 +55,9 @@
 <div th:replace="layout :: scripts"></div>
 <script>
     $('.container-options tr').click(function () {
-        $(this).find('td input[type=checkbox]').prop('checked', true);
+        let checkbox = $(this).find('td input[type=checkbox]');
+        let checkedStatus = checkbox.prop('checked');
+        checkbox.prop('checked', !checkedStatus);
     });
     $( document ).ready(function() {
         var checkboxes = document.getElementsByTagName('input');

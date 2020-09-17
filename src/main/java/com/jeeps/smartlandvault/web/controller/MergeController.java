@@ -37,17 +37,19 @@ public class MergeController {
     @Autowired
     private DataContainerRepository dataContainerRepository;
 
-    private final String newUnionUrl = "/merge/union/new";
 
     @GetMapping("/merge")
     public String mergeMenu(Model model) {
 
         model.addAttribute("mergedContainers", mergedContainerRepository.findAll());
-        model.addAttribute("newMergeLink", newUnionUrl);
+        model.addAttribute("newUnionLink", "/merge/union/new");
+        model.addAttribute("newJoinLink", "/merge/join/new");
         return "merge/merge_home";
     }
 
-    @GetMapping(newUnionUrl)
+    /****** UNION *******/
+
+    @GetMapping("/merge/union/new")
     public String newUnion(Model model) {
         model.addAttribute("containers", dataContainerRepository.findAll());
         model.addAttribute("formUrl", contextPath + "/merge/union");
@@ -91,5 +93,14 @@ public class MergeController {
         redirectAttributes.addFlashAttribute("flash",
                 new FlashMessage("Unión creada exitosamente", FlashMessage.Status.SUCCESS));
         return "redirect:/merge";
+    }
+
+    /****** JOIN *******/
+
+    @GetMapping("/merge/join/new")
+    public String newJoin(Model model) {
+        model.addAttribute("containers", dataContainerRepository.findAll());
+        model.addAttribute("formUrl", contextPath + "/merge/join");
+        return "merge/new_join";
     }
 }

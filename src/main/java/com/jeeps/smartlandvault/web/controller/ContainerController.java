@@ -63,6 +63,9 @@ public class ContainerController {
     @Autowired
     private TableFileService tableFileService;
 
+    private final String EXPORT_EXCEL_URL = "/files/export/excel/%s";
+    private final String EXPORT_CSV_URL = "/files/export/csv/%s";
+
     @GetMapping("/containers")
     public String containersBrowser(Model model) {
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
@@ -191,6 +194,8 @@ public class ContainerController {
         String fileRelativeUrl = dataContainer.getFileUrl().replace(contextPath, "");
         model.addAttribute("fileDownloadUrl", fileRelativeUrl);
 
+        model.addAttribute("exportExcelUrl", String.format(EXPORT_EXCEL_URL, dataContainer.getId()));
+        model.addAttribute("exportCsvUrl", String.format(EXPORT_CSV_URL, dataContainer.getId()));
         model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("inventory", containerInventory);
         model.addAttribute("browseDataLink", String.format("/container/%s/browseData", dataContainer.getId()));

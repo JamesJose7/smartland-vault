@@ -11,22 +11,31 @@
             <h1 th:text="${dataContainer.name}"></h1>
         </div>
         <div class="col-lg-2">
-            <p th:if="${dataContainer.active}" class="container-active text-lg-right">Active <i class="material-icons">check_circle</i></p>
-            <p th:unless="${dataContainer.active}" class="container-inactive text-lg-right">Inactive <i class="material-icons">check_circle_outline</i></p>
+            <p th:if="${dataContainer.active}" class="container-active text-lg-right">Active <i class="material-icons">check_circle</i>
+            </p>
+            <p th:unless="${dataContainer.active}" class="container-inactive text-lg-right">Inactive <i
+                    class="material-icons">check_circle_outline</i></p>
         </div>
     </div>
     <h2 class="section-border">About</h2>
     <div class="row">
         <div class="col-lg-6">
             <p class="info-item">Identifier<span th:text="${dataContainer.id}"></span></p>
-            <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}" target="_blank"></a></span></p>
+            <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a
+                    th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}"
+                    target="_blank"></a></span></p>
             <p class="info-item">Type<span th:text="${dataContainer.originType}"></span></p>
-            <p class="info-item">Publisher<span th:text="${dataContainer.publisher == null ? 'No publisher' : dataContainer.publisher}"></span></p>
+            <p class="info-item">Publisher<span
+                    th:text="${dataContainer.publisher == null ? 'No publisher' : dataContainer.publisher}"></span></p>
         </div>
         <div class="col-lg-6">
-            <p th:if="${dataContainer.sourceUrl == null || dataContainer.sourceUrl.isEmpty()}" class="info-item">Source<span>No source</span></p>
-            <p th:unless="${dataContainer.sourceUrl == null  || dataContainer.sourceUrl.isEmpty()}" class="info-item">Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}" target="_blank"></a></span></p>
-            <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span th:text="${dataContainer.year}"></span></p>
+            <p th:if="${dataContainer.sourceUrl == null || dataContainer.sourceUrl.isEmpty()}" class="info-item">
+                Source<span>No source</span></p>
+            <p th:unless="${dataContainer.sourceUrl == null  || dataContainer.sourceUrl.isEmpty()}" class="info-item">
+                Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}"
+                               target="_blank"></a></span></p>
+            <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span
+                    th:text="${dataContainer.year}"></span></p>
             <p class="info-item">Data count<span th:text="${dataContainer.dataCount}"></span></p>
             <p class="info-item">Property count<span th:text="${dataContainer.propertyCount}"></span></p>
         </div>
@@ -40,7 +49,19 @@
             <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Raw Data</a>
         </div>
     </div>
-    <a th:href="@{${fileDownloadUrl}}" class="btn btn-outline-dark d-block w-100 mb-5">Descargar</a>
+    <div th:if="${dataContainer.isMerge()}" class="row mb-5">
+        <div class="col-md-6">
+            <a th:href="@{${exportExcelUrl}}" class="btn btn-outline-dark d-block w-100">Exportar Excel</a>
+        </div>
+        <div class="col-md-6">
+            <a th:href="@{${exportCsvUrl}}" class="btn btn-outline-dark d-block w-100">Exportar CSV</a>
+        </div>
+    </div>
+    <div th:if="${!dataContainer.isMerge()}" class="row mb-5">
+        <div class="col-12">
+            <a th:href="@{${fileDownloadUrl}}" class="btn btn-outline-dark d-block w-100">Descargar</a>
+        </div>
+    </div>
 
     <div th:if="${inventory != null}" class="mb-5">
         <h2 class="section-border">Inventory</h2>
@@ -76,7 +97,8 @@
     </div>
     <div th:unless="${inventory != null}" class="mb-5">
         <p>There is no inventory created for this container.</p>
-        <p>Please create one by <a th:href="@{${browseDataLink}}">browsing it's data</a> and selecting the main object to track</p>
+        <p>Please create one by <a th:href="@{${browseDataLink}}">browsing it's data</a> and selecting the main object
+            to track</p>
     </div>
 </div>
 

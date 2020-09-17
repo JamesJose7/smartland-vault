@@ -1,5 +1,6 @@
 package com.jeeps.smartlandvault.web.controller;
 
+import com.jeeps.smartlandvault.merging.JoinCandidate;
 import com.jeeps.smartlandvault.merging.MergeService;
 import com.jeeps.smartlandvault.merging.UnionForm;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
@@ -102,5 +103,17 @@ public class MergeController {
         model.addAttribute("containers", dataContainerRepository.findAll());
         model.addAttribute("formUrl", contextPath + "/merge/join");
         return "merge/new_join";
+    }
+
+    @GetMapping("/merge/join")
+    public String displayJoinCandidates(@RequestParam("containerId") String containerId, Model model) {
+        List<JoinCandidate> joinCandidates = mergeService.findJoinCandidates(containerId);
+        DataContainer originalContainer = dataContainerRepository.findById(containerId).orElse(new DataContainer());
+//        UnionForm unionForm = new UnionForm(originalContainer, joinCandidates);
+
+        model.addAttribute("candidates", joinCandidates);
+        model.addAttribute("formUrl", contextPath + "/merge/union/create");
+        model.addAttribute("unionForm", new UnionForm());
+        return "merge/join_candidates";
     }
 }

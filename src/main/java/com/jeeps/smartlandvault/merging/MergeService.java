@@ -53,4 +53,42 @@ public class MergeService {
             original.getData().addAll(container.getData());
         return original;
     }
+
+    public List<JoinCandidate> findJoinCandidates(String containerId) {
+        Optional<DataContainer> containerOptional = dataContainerRepository.findById(containerId);
+        if (containerOptional.isEmpty()) return null;
+        DataContainer selectedContainer = containerOptional.get();
+        List<DataContainer> allContainers = dataContainerRepository.findAll();
+
+        // Find containers with the same data structure
+        if (selectedContainer.getMetadata() == null) return Collections.emptyList();
+        return allContainers.stream()
+                .filter(container -> {
+                    if (container.getMetadata() == null) return false;
+                    // Filter out the selected container
+                    if (container.getId().equals(selectedContainer.getId())) return false;
+                    // Find containers with the same metadata
+                    List<Metadata> equalMetadata = container.getMetadata().stream().filter(metadata ->
+                            containsMetadata(selectedContainer.getMetadata(), metadata))
+                            .collect(Collectors.toList());
+                    return !equalMetadata.isEmpty();
+                })
+                .map(container -> {
+                    List<String> similarProperties = filterSimilarProperties(selectedContainer, container);
+                    return new JoinCandidate(container, similarProperties);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private List<String> filterSimilarProperties(DataContainer main, DataContainer candidate) {
+        // Get main property names as a list
+        List<String> mainPropertyNames = main.getMetadata().stream()
+                .map(metadata -> metadata.getPropertyName().toLowerCase())
+                .collect(Collectors.toList());
+        // Filter similar properties
+        return candidate.getMetadata().stream()
+                .filter(metadata -> mainPropertyNames.contains(metadata.getPropertyName().toLowerCase()))
+                .map(Metadata::getPropertyName)
+                .collect(Collectors.toList());
+    }
 }

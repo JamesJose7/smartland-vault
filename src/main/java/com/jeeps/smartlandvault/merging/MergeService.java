@@ -17,7 +17,7 @@ public class MergeService {
 
     public List<DataContainer> findUnionCandidates(String containerId) {
         Optional<DataContainer> containerOptional = dataContainerRepository.findById(containerId);
-        if (containerOptional.isEmpty()) return null;
+        if (!containerOptional.isPresent()) return null;
         DataContainer selectedContainer = containerOptional.get();
         List<DataContainer> allContainers = dataContainerRepository.findAll();
 
@@ -54,7 +54,7 @@ public class MergeService {
 
     public List<JoinCandidate> findJoinCandidates(String containerId) {
         Optional<DataContainer> containerOptional = dataContainerRepository.findById(containerId);
-        if (containerOptional.isEmpty()) return null;
+        if (!containerOptional.isPresent()) return null;
         DataContainer selectedContainer = containerOptional.get();
         List<DataContainer> allContainers = dataContainerRepository.findAll();
 

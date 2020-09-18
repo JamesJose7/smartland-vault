@@ -174,7 +174,7 @@ public class ContainerController {
     public String viewContainer(@PathVariable("id") String id,
             Model model) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
-        if (dataContainerOptional.isEmpty())
+        if (!dataContainerOptional.isPresent())
             throw new ResourceNotFoundException();
         // Container and it's data
         DataContainer dataContainer = dataContainerOptional.get();
@@ -210,7 +210,7 @@ public class ContainerController {
                                 @RequestParam(name = "navigating", defaultValue = "false", required = false) String isNavigating,
                                 Model model) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
-        if (dataContainerOptional.isEmpty())
+        if (!dataContainerOptional.isPresent())
             throw new ResourceNotFoundException();
         // Container and it's data
         DataContainer dataContainer = dataContainerOptional.get();
@@ -233,7 +233,7 @@ public class ContainerController {
             List<String> treeElements = new ArrayList<>(Arrays.asList(currentTree.split("/")));
             treeElements.remove(treeElements.size()-1);
             String previousTreeUrl = String.join("/", treeElements);
-            model.addAttribute("previousTreeUrl", previousTreeUrl.isBlank() ? "/" : previousTreeUrl);
+            model.addAttribute("previousTreeUrl", previousTreeUrl.trim().isEmpty() ? "/" : previousTreeUrl);
         }
         // Check if the current tree is the main data
         boolean isMainDataSelected = false;
@@ -255,7 +255,7 @@ public class ContainerController {
                                      @PathVariable(name = "id") String containerId,
                                      @RequestParam(name = "tree") String selectedTree) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(containerId);
-        if (dataContainerOptional.isEmpty())
+        if (!dataContainerOptional.isPresent())
             throw new ResourceNotFoundException();
         DataContainer dataContainer = dataContainerOptional.get();
         List<Object> data = dataContainer.getData();

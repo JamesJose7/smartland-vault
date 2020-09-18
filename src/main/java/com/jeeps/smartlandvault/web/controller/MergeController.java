@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -109,11 +110,35 @@ public class MergeController {
     public String displayJoinCandidates(@RequestParam("containerId") String containerId, Model model) {
         List<JoinCandidate> joinCandidates = mergeService.findJoinCandidates(containerId);
         DataContainer originalContainer = dataContainerRepository.findById(containerId).orElse(new DataContainer());
-//        UnionForm unionForm = new UnionForm(originalContainer, joinCandidates);
 
         model.addAttribute("candidates", joinCandidates);
-        model.addAttribute("formUrl", contextPath + "/merge/union/create");
-        model.addAttribute("unionForm", new UnionForm());
+        model.addAttribute("formUrl", contextPath + "/merge/join/create");
+        model.addAttribute("originalContainer", originalContainer);
         return "merge/join_candidates";
+    }
+
+    @PostMapping("/merge/join/create")
+    public String unionContainers(RedirectAttributes redirectAttributes,
+                                  @RequestParam("containerProperty") String containerProperty,
+                                  @RequestParam("name") String name,
+                                  @RequestParam("originalContainerId") String originalContainerId) {
+        String joinContainerId = containerProperty.split("///")[0];
+        String joinProperty = containerProperty.split("///")[1];
+        DataContainer originalContainer = dataContainerRepository.findById(originalContainerId).orElse(null);
+        DataContainer joinContainer = dataContainerRepository.findById(joinContainerId).orElse(null);
+        // Create new merged container
+        DataContainer newContainer = mergeService.performJoin(originalContainer, joinContainer, joinProperty);
+        newContainer.setName(name);
+        newContainer.setNewJoinId();
+        newContainer.setMerge(true);
+        dataContainerRepository.save(newContainer);
+        // Save merge container data
+        List<String> containersIds = Arrays.asList(originalContainerId, joinContainerId);
+        MergedContainer mergedContainer = new MergedContainer(newContainer.getId(), newContainer.getName(), containersIds, newContainer);
+        mergedContainerRepository.save(mergedContainer);
+
+        redirectAttributes.addFlashAttribute("flash",
+                new FlashMessage("Unión creada exitosamente", FlashMessage.Status.SUCCESS));
+        return "redirect:/merge";
     }
 }

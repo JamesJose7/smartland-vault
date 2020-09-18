@@ -83,6 +83,10 @@ public class DataContainer {
         this.id = generateRandomId() + "-union";
     }
 
+    public void setNewJoinId() {
+        this.id = generateRandomId() + "-join";
+    }
+
     public String getName() {
         return name;
     }

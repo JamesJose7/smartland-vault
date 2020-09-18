@@ -6,9 +6,7 @@ import com.jeeps.smartlandvault.nosql.metadata.Metadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,5 +88,45 @@ public class MergeService {
                 .filter(metadata -> mainPropertyNames.contains(metadata.getPropertyName().toLowerCase()))
                 .map(Metadata::getPropertyName)
                 .collect(Collectors.toList());
+    }
+
+    public DataContainer performJoin(DataContainer originalContainer, DataContainer joinContainer, String joinProperty) {
+        // Merge metadata
+        joinContainer.getMetadata().removeIf(metadata -> metadata.getPropertyName().equals(joinProperty));
+        originalContainer.getMetadata().addAll(joinContainer.getMetadata());
+        // join columns
+        List<Object> newValues = originalContainer.getData().stream()
+                .map(rowDataRaw -> {
+                    LinkedHashMap<String, Object> originalContainerData = (LinkedHashMap) rowDataRaw;
+                    Object joinPropertyValue = originalContainerData.get(joinProperty);
+                    LinkedHashMap<String, Object> joinContainerValues =
+                            findJoinColumn(joinContainer, joinProperty, joinPropertyValue);
+                    if (joinContainerValues != null)
+                        originalContainerData.putAll(joinContainerValues);
+                    else
+                        originalContainerData.clear();
+                    return originalContainerData;
+                })
+                .collect(Collectors.toList());
+        newValues.removeIf(Objects::isNull);
+        originalContainer.setData(newValues);
+        return originalContainer;
+    }
+
+    private LinkedHashMap<String, Object> findJoinColumn(DataContainer dataContainer, String joinProperty, Object joinPropertyValue) {
+        return dataContainer.getData().stream()
+                .filter(rowDataRaw -> {
+                    LinkedHashMap<String, Object> rowData = (LinkedHashMap) rowDataRaw;
+                    if (rowData.get(joinProperty) == null || joinPropertyValue == null) return false;
+                    return rowData.get(joinProperty).equals(joinPropertyValue);
+                })
+                .findFirst()
+                .map(rowDataRaw -> {
+                    LinkedHashMap<String, Object> rowData = (LinkedHashMap) rowDataRaw;
+                    LinkedHashMap<String, Object> newRowData = new LinkedHashMap<>(rowData);
+                    newRowData.remove(joinProperty);
+                    return newRowData;
+                })
+                .orElse(null);
     }
 }

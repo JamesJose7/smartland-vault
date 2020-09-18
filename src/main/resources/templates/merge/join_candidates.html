@@ -15,41 +15,38 @@
     </div>
 
     <div class="table-responsive">
-        <form th:action="${formUrl}" method="post" th:object="${unionForm}">
-            <input type="hidden" th:field="*{originalContainer}">
+        <form th:action="${formUrl}" method="post">
+            <input type="hidden" name="originalContainerId" th:value="${originalContainer.id}">
 
             <div class="form-group">
                 <label for="nameInput">Nombre</label>
-                <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Container name" name="name" required>
+                <input type="text" class="form-control" id="nameInput" placeholder="Container name"
+                       name="name" required>
             </div>
 
             <table class="table table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th scope="col"></th>
                     <th scope="col">ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Propiedades válidas</th>
                 </tr>
                 </thead>
                 <tbody class="container-options">
-                <tr th:each="candidate, stat : ${candidates}" th:with="container=${candidate.dataContainer}" class="cursor-pointer">
-                    <td>
-                        <div class="form-check">
-<!--                            <input type="checkbox" th:value="${container.id}"-->
-<!--                                   th:id="|container-${stat.index}|"-->
-<!--                                   th:field="*{newContainers[__${stat.index}__]}" -->
-<!--                                   class="form-check-input">-->
-                            <input type="checkbox" th:value="${container.id}"
-                                   th:id="|container-${stat.index}|"
-                                   class="form-check-input">
-                        </div>
-                    </td>
+                <tr th:each="candidate, stat : ${candidates}" th:with="container=${candidate.dataContainer}">
                     <td th:text="${container.id}"></td>
                     <td th:text="${container.name}"></td>
                     <td>
-                        <ul>
-                            <li th:each="validProperty : ${candidate.validProperties}" th:text="${validProperty}"></li>
+                        <ul class="p-0 m-0">
+                            <li th:each="validProperty : ${candidate.validProperties}" class="list-unstyled">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="containerProperty"
+                                           th:id="|${container.id}-${validProperty}-${stat.index}|"
+                                           th:value="|${container.id}///${validProperty}|" required>
+                                    <label th:for="|${container.id}-${validProperty}-${stat.index}|"
+                                           th:text="${validProperty}"></label>
+                                </div>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -63,20 +60,5 @@
 </div>
 
 <div th:replace="layout :: scripts"></div>
-<script>
-    $('.container-options tr').click(function () {
-        let checkbox = $(this).find('td input[type=checkbox]');
-        let checkedStatus = checkbox.prop('checked');
-        checkbox.prop('checked', !checkedStatus);
-    });
-    $( document ).ready(function() {
-        var checkboxes = document.getElementsByTagName('input');
-        for (var i=0; i<checkboxes.length; i++)  {
-            if (checkboxes[i].type == 'checkbox')   {
-                checkboxes[i].checked = false;
-            }
-        }
-    });
-</script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +27,15 @@ public class DataContainer {
     private int dataCount;
     private int propertyCount;
     private String originType;
+
+//    private Catalog catalog
+    private Date dateCreated;
+    private Date dateUpdated;
+    private List<String> keywords;
+    private String description;
+    private String fileType;
+    private String licenseType;
+
     private boolean isMerge;
     @JsonIgnore
     private List<Object> data;
@@ -167,6 +177,54 @@ public class DataContainer {
         this.originType = originType;
     }
 
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(String licenseType) {
+        this.licenseType = licenseType;
+    }
+
     public boolean isMerge() {
         return isMerge;
     }
@@ -192,6 +250,8 @@ public class DataContainer {
 
     public void setMetadata(List<Metadata> metadata) {
         this.metadata = metadata;
+        // update property count
+        setPropertyCount(metadata.size());
     }
 
     @Override

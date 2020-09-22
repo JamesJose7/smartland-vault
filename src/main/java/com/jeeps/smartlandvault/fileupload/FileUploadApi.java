@@ -1,6 +1,7 @@
 package com.jeeps.smartlandvault.fileupload;
 
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
+import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
 import org.apache.commons.io.FilenameUtils;
@@ -61,9 +62,11 @@ public class FileUploadApi {
             String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
             String fileId = tableFileService.addTableFile(name, fileExtension, file);
             String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
+            // Create data container
+            DataContainer dataContainer = new DataContainer(id, name, observatory, year, fileUrl,
+                    DataContainer.ORIGIN_EXCEL, publisher, sourceUrl);
             // Transform excel
-            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl,
-                    fileUrl, fileExtension);
+            excelTransformerService.transform(file.getInputStream(), dataContainer, fileExtension);
             json.put("message", "File uploaded successfully");
             return ResponseEntity.ok(json.toString());
         } catch (IncorrectExcelFormatException e) {

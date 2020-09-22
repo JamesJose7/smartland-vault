@@ -3,6 +3,7 @@ package com.jeeps.smartlandvault.web.controller;
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
+import com.jeeps.smartlandvault.nosql.data_container.DataContainerForm;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
@@ -83,6 +84,7 @@ public class ContainerController {
     @GetMapping("/container/add/excel")
     public String addExcelContainer(Model model) {
         model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
+        model.addAttribute("dataContainerForm", new DataContainerForm());
         // Get list of observatories
         try {
             model.addAttribute("observatories", observatoriesService.getObservatories());
@@ -96,19 +98,14 @@ public class ContainerController {
     // Web Forms
     @PostMapping("container/add/excel/fileUpload")
     public String uploadExcelTableWeb(
-            @RequestParam(name = "file") MultipartFile file,
-            @RequestParam(name = "id", required = false) String id,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "observatory") String observatory,
-            @RequestParam(name = "year") int year,
-            @RequestParam(name = "publisher", required = false) String publisher,
-            @RequestParam(name = "sourceUrl", required = false) String sourceUrl,
-            RedirectAttributes redirectAttributes
-    ) throws Exception {
+            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) throws Exception {
         String failureRedirect = "redirect:/container/add/excel";
         String successRedirect = "redirect:/containers";
 
-        name = name == null ? "No name" : name;
+        MultipartFile file = dataContainerForm.getFile();
+        DataContainer dataContainer = dataContainerForm.getDataContainer();
+        // Process keywords
+
         // Check MIME type to match the accepted ones
         if (file.getContentType() == null) {
             redirectAttributes.addFlashAttribute("flash",
@@ -124,11 +121,14 @@ public class ContainerController {
         try {
             // Upload file to mongodb
             String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-            String fileId = tableFileService.addTableFile(name, fileExtension, file);
+            String fileId = tableFileService.addTableFile(dataContainer.getName(), fileExtension, file);
             String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
+            // Additional data
+            dataContainer.setFileUrl(fileUrl);
+            dataContainer.setFileType(fileExtension);
+            dataContainer.setDateCreated(new Date());
             // Transform excel
-            excelTransformerService.transform(file.getInputStream(), id, name, observatory, year, publisher, sourceUrl,
-                    fileUrl, fileExtension);
+            excelTransformerService.transform(file.getInputStream(), dataContainer, fileExtension);
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
             return successRedirect;

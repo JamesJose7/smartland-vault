@@ -28,6 +28,15 @@ body {
     color: black;
 }
 
+.keywords span {
+    font-size: 1em;
+}
+
+.dates-text {
+    color: rgba(100,100,100, 0.9);
+    font-size: .7em;
+}
+
 .btn-icon i {
     vertical-align: middle;
 }

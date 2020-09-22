@@ -17,60 +17,59 @@
                     class="material-icons">check_circle_outline</i></p>
         </div>
     </div>
-    <h2 class="section-border">About</h2>
+
+    <h2 class="section-border">Información</h2>
     <div class="row">
-        <div class="col-lg-6">
-            <p class="info-item">Identifier<span th:text="${dataContainer.id}"></span></p>
-            <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a
-                    th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}"
-                    target="_blank"></a></span></p>
-            <p class="info-item">Type<span th:text="${dataContainer.originType}"></span></p>
-            <p class="info-item">Publisher<span
-                    th:text="${dataContainer.publisher == null ? 'No publisher' : dataContainer.publisher}"></span></p>
-        </div>
-        <div class="col-lg-6">
+        <div class="col-md-4">
+            <p class="info-item">Editor<span
+                    th:text="${dataContainer.publisher == null || dataContainer.publisher.isEmpty() ? 'Anónimo' : dataContainer.publisher}"></span>
+            </p>
             <p th:if="${dataContainer.sourceUrl == null || dataContainer.sourceUrl.isEmpty()}" class="info-item">
-                Source<span>No source</span></p>
+                Source<span>Sin fuente</span></p>
             <p th:unless="${dataContainer.sourceUrl == null  || dataContainer.sourceUrl.isEmpty()}" class="info-item">
                 Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}"
                                target="_blank"></a></span></p>
+            <p class="info-item">Palabras clave</p>
+            <p class="keywords"><span th:text="${keyword}"
+                                      th:each="keyword : ${dataContainer.keywords}"
+                                      class="badge badge-pill badge-light mb-1 mr-1 font-weight-normal"></span></p>
+        </div>
+        <div class="col-md-8">
+            <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a
+                    th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}"
+                    target="_blank"></a></span></p>
             <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span
                     th:text="${dataContainer.year}"></span></p>
-            <p class="info-item">Data count<span th:text="${dataContainer.dataCount}"></span></p>
-            <p class="info-item">Property count<span th:text="${dataContainer.propertyCount}"></span></p>
+            <p class="info-item">Descripción<span th:text="${dataContainer.description}"></span></p>
         </div>
     </div>
-
-    <div class="row mb-4">
+    <div class="row dates-text">
         <div class="col-md-6">
-            <a th:href="@{${browseDataLink}}" class="btn btn-outline-dark d-block w-100">Browse Data</a>
+            <p th:text="|Creado en ${T(com.jeeps.smartlandvault.util.TemplateUtils).formatDate(dataContainer.dateCreated)}|"
+               class="text-left"></p>
         </div>
-        <div class="col-md-6 mt-2 mt-md-0">
-            <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Raw Data</a>
-        </div>
-    </div>
-    <div th:if="${dataContainer.isMerge()}" class="row mb-5">
-        <div class="col-md-6">
-            <a th:href="@{${exportExcelUrl}}" class="btn btn-outline-dark d-block w-100">Exportar Excel</a>
-        </div>
-        <div class="col-md-6">
-            <a th:href="@{${exportCsvUrl}}" class="btn btn-outline-dark d-block w-100">Exportar CSV</a>
-        </div>
-    </div>
-    <div th:if="${!dataContainer.isMerge()}" class="row mb-5">
-        <div class="col-12">
-            <a th:href="@{${fileDownloadUrl}}" class="btn btn-outline-dark d-block w-100">Descargar</a>
+        <div class="col-md-6" th:if="${dataContainer.dateUpdated != null}">
+            <p th:text="|Última actualización en ${T(com.jeeps.smartlandvault.util.TemplateUtils).formatDate(dataContainer.dateUpdated)}|"
+               class="text-right"></p>
         </div>
     </div>
 
     <div th:if="${inventory != null}" class="mb-5">
-        <h2 class="section-border">Inventory</h2>
+        <h2 class="section-border">Metadatos</h2>
         <div class="row">
             <div class="col-lg-6">
-                <p class="info-item">Name<span th:text="${inventory.name}"></span></p>
+                <p class="info-item">Nombre de recurso<span th:text="${inventory.name}"></span></p>
+                <p class="info-item"># de columnas<span th:text="${dataContainer.propertyCount}"></span></p>
             </div>
             <div class="col-lg-6">
-                <p class="info-item">Main data property<span th:text="${inventory.mainDataProperty}"></span></p>
+                <p class="info-item">Ruta de datos<span th:text="${inventory.mainDataProperty}"></span></p>
+                <p class="info-item"># de datos<span th:text="${dataContainer.dataCount}"></span></p>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <a th:href="@{${browseDataLink}}" class="btn btn-outline-dark d-block w-100">Navegar metadatos</a>
             </div>
         </div>
 
@@ -96,10 +95,34 @@
         </div>
     </div>
     <div th:unless="${inventory != null}" class="mb-5">
-        <p>There is no inventory created for this container.</p>
+        <p>There is no metadata created for this container.</p>
         <p>Please create one by <a th:href="@{${browseDataLink}}">browsing it's data</a> and selecting the main object
             to track</p>
     </div>
+
+    <h2 class="section-border">Dataset</h2>
+    <div th:if="${dataContainer.isMerge()}" class="row mb-5 mt-2">
+        <div class="col-md-4">
+            <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Data Web
+                Service</a>
+        </div>
+        <div class="col-md-4">
+            <a th:href="@{${exportExcelUrl}}" class="btn btn-outline-dark d-block w-100">Exportar Excel</a>
+        </div>
+        <div class="col-md-4">
+            <a th:href="@{${exportCsvUrl}}" class="btn btn-outline-dark d-block w-100">Exportar CSV</a>
+        </div>
+    </div>
+    <div th:if="${!dataContainer.isMerge()}" class="row mb-5 mt-2">
+        <div class="col-md-6">
+            <a th:href="@{${rawDataLink}}" target="_blank" class="btn btn-outline-dark d-block w-100">Data Web
+                Service</a>
+        </div>
+        <div class="col-md-6">
+            <a th:href="@{${fileDownloadUrl}}" class="btn btn-outline-dark d-block w-100">Descargar fuente</a>
+        </div>
+    </div>
+
 </div>
 
 <div th:replace="layout :: scripts"></div>

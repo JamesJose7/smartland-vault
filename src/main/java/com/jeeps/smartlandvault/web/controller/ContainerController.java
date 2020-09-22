@@ -15,6 +15,7 @@ import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
 import com.jeeps.smartlandvault.util.ExcelSheetReader;
 import com.jeeps.smartlandvault.util.InventoryHelper;
+import com.jeeps.smartlandvault.util.KeywordsHelper;
 import com.jeeps.smartlandvault.util.UrlUtils;
 import com.jeeps.smartlandvault.web.FlashMessage;
 import org.apache.commons.io.FilenameUtils;
@@ -105,6 +106,7 @@ public class ContainerController {
         MultipartFile file = dataContainerForm.getFile();
         DataContainer dataContainer = dataContainerForm.getDataContainer();
         // Process keywords
+        dataContainer.setKeywords(KeywordsHelper.processKeywords(dataContainerForm.getKeywordsRaw()));
 
         // Check MIME type to match the accepted ones
         if (file.getContentType() == null) {

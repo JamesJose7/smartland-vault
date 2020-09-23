@@ -123,8 +123,43 @@
         </div>
     </div>
 
+    <div class="table-responsive mb-5">
+        <table id="dataset-table" class="table table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th th:each="column : ${dataContainer.metadata}" th:text="${column.name != null ? column.name : column.propertyName}"></th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
 </div>
 
 <div th:replace="layout :: scripts"></div>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+
+    const dataTablesEndPoint = /*[[${dataTablesEndPoint}]]*/ '';
+    const columnsData = /*[[${dataContainer.metadata}]]*/ [];
+
+    /*]]>*/
+
+    $(document).ready( function () {
+        // Get column names from metadata
+        const columnNames = columnsData.map(column => {
+            return {
+                data: column.propertyName
+            }
+        });
+
+        // Create data table
+        const table = $('#dataset-table').DataTable({
+            "sAjaxSource": dataTablesEndPoint,
+            "sAjaxDataProp": "",
+            "columns": columnNames
+        })
+    });
+</script>
 </body>
 </html>

@@ -202,6 +202,7 @@ public class ContainerController {
         model.addAttribute("inventory", containerInventory);
         model.addAttribute("browseDataLink", String.format("/container/%s/browseData", dataContainer.getId()));
         model.addAttribute("rawDataLink", String.format("/api/v1/dataContainers/%s/data", dataContainer.getId()));
+        model.addAttribute("dataTablesEndPoint", String.format("%s/api/v1/dataContainers/%s/data", contextPath, dataContainer.getId()));
         return "containers/container_home";
     }
 

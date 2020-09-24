@@ -161,6 +161,12 @@ body {
     color: rgba(50,50,50, 0.26);
 }
 
+.file-icon {
+    display: inline-block;
+    height: 28px;
+    margin-right: 5px;
+}
+
 /* Media queries */
 @media (min-width: 992px) {
     /* Data browser page */

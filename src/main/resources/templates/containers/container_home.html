@@ -29,8 +29,17 @@
             <p th:unless="${dataContainer.sourceUrl == null  || dataContainer.sourceUrl.isEmpty()}" class="info-item">
                 Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}"
                                target="_blank"></a></span></p>
-            <p class="info-item">Palabras clave</p>
-            <p class="keywords"><span th:text="${keyword}"
+            <p class="info-item">Tipo</p>
+            <div th:if="${dataContainer.isMerge()}">
+                <p th:text="${dataContainer.fileType}"></p>
+            </div>
+            <div th:unless="${dataContainer.isMerge()}">
+                <img th:src="@{${T(com.jeeps.smartlandvault.util.TemplateUtils).getFileIcon(dataContainer.fileType)}}"
+                    alt="file-type" class="file-icon"/>
+                <p class="d-inline-block">Recurso original</p>
+            </div>
+            <p class="info-item" th:if="${dataContainer.keywords != null}">Palabras clave</p>
+            <p class="keywords" th:if="${dataContainer.keywords != null}"><span th:text="${keyword}"
                                       th:each="keyword : ${dataContainer.keywords}"
                                       class="badge badge-pill badge-light mb-1 mr-1 font-weight-normal"></span></p>
         </div>
@@ -40,6 +49,9 @@
                     target="_blank"></a></span></p>
             <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span
                     th:text="${dataContainer.year}"></span></p>
+            <p class="info-item">Licencia<span
+                    th:text="${dataContainer.licenseType != null ? dataContainer.licenseType : 'N/A'}"></span>
+            </p>
             <p class="info-item">Descripción<span th:text="${dataContainer.description}"></span></p>
         </div>
     </div>
@@ -127,7 +139,8 @@
         <table id="dataset-table" class="table table-striped">
             <thead class="thead-dark">
             <tr>
-                <th th:each="column : ${dataContainer.metadata}" th:text="${column.name != null ? column.name : column.propertyName}"></th>
+                <th th:each="column : ${dataContainer.metadata}"
+                    th:text="${column.name != null ? column.name : column.propertyName}"></th>
             </tr>
             </thead>
         </table>
@@ -145,7 +158,7 @@
 
     /*]]>*/
 
-    $(document).ready( function () {
+    $(document).ready(function () {
         // Get column names from metadata
         const columnNames = columnsData.map(column => {
             return {

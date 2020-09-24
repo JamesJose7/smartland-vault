@@ -84,6 +84,7 @@ public class MergeController {
         dataContainer.setName(unionForm.getName());
         dataContainer.setNewUnionId();
         dataContainer.setMerge(true);
+        dataContainer.setFileType("Unión");
         dataContainerRepository.save(dataContainer);
         // Save merge container data
         List<String> containersIds = unionForm.getNewContainers().stream()
@@ -131,6 +132,7 @@ public class MergeController {
         newContainer.setName(name);
         newContainer.setNewJoinId();
         newContainer.setMerge(true);
+        newContainer.setFileType("Join");
         dataContainerRepository.save(newContainer);
         // Save merge container data
         List<String> containersIds = Arrays.asList(originalContainerId, joinContainerId);

@@ -167,6 +167,27 @@ body {
     margin-right: 5px;
 }
 
+/* Join page */
+.condition-container {
+    background: rgba(200,200,200,.2);
+    border-radius: 15px;
+    box-shadow: 1px 1px 1px 1px rgba(0,0,0,.1);
+    margin: 30px 0;
+    padding: 12px;
+}
+
+.condition-equal {
+    position: relative;
+}
+
+.condition-equal img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 30px;
+}
+
 /* Media queries */
 @media (min-width: 992px) {
     /* Data browser page */

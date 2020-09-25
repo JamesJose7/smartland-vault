@@ -20,7 +20,7 @@
 
                 <div class="form-group">
                     <label for="nameInput">Nombre</label>
-                    <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Container name" name="name" required>
+                    <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Nombre del dataset" name="name" required>
                 </div>
 
                 <div id="conditions">
@@ -43,7 +43,9 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-2"><p>===</p></div>
+                        <div class="col-md-2 condition-equal">
+                            <img th:src="@{/assets/icons/equals-symbol.png}" alt="">
+                        </div>
                         <div class="col-md-5 table-selector" id="rightGroup-0">
                             <div class="form-group">
                                 <label>Dataset</label>

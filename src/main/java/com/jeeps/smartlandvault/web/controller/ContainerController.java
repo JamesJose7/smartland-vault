@@ -68,7 +68,7 @@ public class ContainerController {
     private final String EXPORT_EXCEL_URL = "/files/export/excel/%s";
     private final String EXPORT_CSV_URL = "/files/export/csv/%s";
 
-    @GetMapping("/containers")
+    @GetMapping("/")
     public String containersBrowser(Model model) {
         model.addAttribute("dataContainers", dataContainerRepository.findAll());
         model.addAttribute("addNewContainerLink", "/container/selectType");
@@ -101,7 +101,7 @@ public class ContainerController {
     public String uploadExcelTableWeb(
             DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) throws Exception {
         String failureRedirect = "redirect:/container/add/excel";
-        String successRedirect = "redirect:/containers";
+        String successRedirect = "redirect:/";
 
         MultipartFile file = dataContainerForm.getFile();
         DataContainer dataContainer = dataContainerForm.getDataContainer();
@@ -157,7 +157,7 @@ public class ContainerController {
             @RequestParam(name = "sourceUrl", required = false) String sourceUrl,
             RedirectAttributes redirectAttributes) {
         String failureRedirect = "redirect:/container/add/rest";
-        String successRedirect = "redirect:/containers";
+        String successRedirect = "redirect:/";
 
         if (!UrlUtils.isValidUrl(restUrl)) {
             redirectAttributes.addFlashAttribute("flash",

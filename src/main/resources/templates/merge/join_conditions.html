@@ -35,7 +35,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Propiedad</label>
+                                <label>Columna</label>
                                 <select class="form-control leftTableProp"
                                         th:field="*{joinPairs[__${0}__].leftContainerProperty}" required>
                                     <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
@@ -56,7 +56,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Propiedad</label>
+                                <label>Columna</label>
                                 <select class="form-control rightTableProp"
                                         th:field="*{joinPairs[__${0}__].rightContainerProperty}" required>
                                     <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"

@@ -32,9 +32,6 @@
                 <li th:classappend="${#httpServletRequest.servletPath.equals('/') ? 'active' : ''}" class="nav-item">
                     <a class="nav-link" th:href="@{/}">Home</a>
                 </li>
-                <li th:classappend="${#httpServletRequest.servletPath.contains('/container') ? 'active' : ''}" class="nav-item">
-                    <a class="nav-link" th:href="@{/containers}">Data Containers</a>
-                </li>
                 <li th:classappend="${#httpServletRequest.servletPath.contains('/merge') ? 'active' : ''}" class="nav-item">
                     <a class="nav-link" th:href="@{/merge}">Uniones</a>
                 </li>

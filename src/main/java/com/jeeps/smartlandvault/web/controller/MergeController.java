@@ -1,6 +1,7 @@
 package com.jeeps.smartlandvault.web.controller;
 
-import com.jeeps.smartlandvault.merging.JoinCandidate;
+import com.jeeps.smartlandvault.merging.JoinForm;
+import com.jeeps.smartlandvault.merging.JoinPair;
 import com.jeeps.smartlandvault.merging.MergeService;
 import com.jeeps.smartlandvault.merging.UnionForm;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
@@ -19,10 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Controller
 public class MergeController {
@@ -108,35 +108,48 @@ public class MergeController {
     }
 
     @GetMapping("/merge/join")
-    public String displayJoinCandidates(@RequestParam("containerId") String containerId, Model model) {
-        List<JoinCandidate> joinCandidates = mergeService.findJoinCandidates(containerId);
-        DataContainer originalContainer = dataContainerRepository.findById(containerId).orElse(new DataContainer());
+    public String displayJoinCandidates(@RequestParam("containerId") String containerIds, Model model) {
+//        List<JoinCandidate> joinCandidates = mergeService.findJoinCandidates(containerId);
+        // Get all containers by ID
+        String[] containerIdsArray = containerIds.split(",");
+        List<DataContainer> dataContainers = StreamSupport.stream(
+                dataContainerRepository.findAllById(Arrays.asList(containerIdsArray.clone())).spliterator(), false)
+                        .collect(Collectors.toList());
+        // Remove data from containers as it is unneeded overhead
+        dataContainers.forEach(container -> container.setData(Collections.emptyList()));
 
-        model.addAttribute("candidates", joinCandidates);
+        model.addAttribute("containers", dataContainers);
+        model.addAttribute("joinForm", new JoinForm());
         model.addAttribute("formUrl", contextPath + "/merge/join/create");
-        model.addAttribute("originalContainer", originalContainer);
-        return "merge/join_candidates";
+        return "merge/join_conditions";
     }
 
     @PostMapping("/merge/join/create")
     public String unionContainers(RedirectAttributes redirectAttributes,
-                                  @RequestParam("containerProperty") String containerProperty,
-                                  @RequestParam("name") String name,
-                                  @RequestParam("originalContainerId") String originalContainerId) {
-        String joinContainerId = containerProperty.split("///")[0];
-        String joinProperty = containerProperty.split("///")[1];
-        DataContainer originalContainer = dataContainerRepository.findById(originalContainerId).orElse(null);
-        DataContainer joinContainer = dataContainerRepository.findById(joinContainerId).orElse(null);
+                                  JoinForm joinForm) {
+        // Loop through all the join table pairs
+        DataContainer joinResult = null;
+        Set<String> containersIds = new HashSet<>();
+        for (JoinPair joinPair : joinForm.getJoinPairs()) {
+            DataContainer leftJoinContainer = joinResult == null ?
+                    dataContainerRepository.findById(joinPair.getLeftContainerId()).orElse(null) :
+                    joinResult;
+            DataContainer rightJoinContainer = dataContainerRepository.findById(joinPair.getRightContainerId()).orElse(null);
+
+            joinResult = mergeService.performJoin(leftJoinContainer, rightJoinContainer,
+                    joinPair.getLeftContainerProperty(), joinPair.getRightContainerProperty());
+            // Save ids
+            containersIds.addAll(Arrays.asList(joinPair.getLeftContainerId(), joinPair.getRightContainerId()));
+        }
         // Create new merged container
-        DataContainer newContainer = mergeService.performJoin(originalContainer, joinContainer, joinProperty);
-        newContainer.setName(name);
-        newContainer.setNewJoinId();
-        newContainer.setMerge(true);
-        newContainer.setFileType("Join");
-        dataContainerRepository.save(newContainer);
+        joinResult.setName(joinForm.getName());
+        joinResult.setNewJoinId();
+        joinResult.setMerge(true);
+        joinResult.setFileType("Join");
+        dataContainerRepository.save(joinResult);
         // Save merge container data
-        List<String> containersIds = Arrays.asList(originalContainerId, joinContainerId);
-        MergedContainer mergedContainer = new MergedContainer(newContainer.getId(), newContainer.getName(), containersIds, newContainer);
+        MergedContainer mergedContainer =
+                new MergedContainer(joinResult.getId(), joinResult.getName(), Arrays.asList(containersIds.toArray(new String[0])), joinResult);
         mergedContainerRepository.save(mergedContainer);
 
         redirectAttributes.addFlashAttribute("flash",

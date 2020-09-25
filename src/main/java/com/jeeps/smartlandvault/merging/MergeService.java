@@ -90,17 +90,18 @@ public class MergeService {
                 .collect(Collectors.toList());
     }
 
-    public DataContainer performJoin(DataContainer originalContainer, DataContainer joinContainer, String joinProperty) {
+    public DataContainer performJoin(DataContainer originalContainer, DataContainer joinContainer,
+                                     String leftJoinProperty, String rightJoinProperty) {
         // Merge metadata
-        joinContainer.getMetadata().removeIf(metadata -> metadata.getPropertyName().equals(joinProperty));
+        joinContainer.getMetadata().removeIf(metadata -> metadata.getPropertyName().equals(leftJoinProperty));
         originalContainer.getMetadata().addAll(joinContainer.getMetadata());
         // join columns
         List<Object> newValues = originalContainer.getData().stream()
                 .map(rowDataRaw -> {
                     LinkedHashMap<String, Object> originalContainerData = (LinkedHashMap) rowDataRaw;
-                    Object joinPropertyValue = originalContainerData.get(joinProperty);
+                    Object joinPropertyValue = originalContainerData.get(leftJoinProperty);
                     LinkedHashMap<String, Object> joinContainerValues =
-                            findJoinColumn(joinContainer, joinProperty, joinPropertyValue);
+                            findJoinColumn(joinContainer, rightJoinProperty, joinPropertyValue);
                     if (joinContainerValues != null)
                         originalContainerData.putAll(joinContainerValues);
                     else

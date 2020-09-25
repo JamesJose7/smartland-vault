@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Nuevo join')"></head>
+<body>
+
+<div th:replace="layout :: nav"></div>
+<div class="container">
+
+    <div th:replace="layout :: flash"></div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <h1>Nuevo join</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <form th:action="${formUrl}" th:object="${joinForm}" method="post">
+
+                <div class="form-group">
+                    <label for="nameInput">Nombre</label>
+                    <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Container name" name="name" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5" id="leftGroup-1">
+                        <div class="form-group">
+                            <label for="leftTableName-1">Dataset</label>
+                            <select class="form-control leftTableName" id="leftTableName-1"
+                                    th:field="*{joinPairs[__${0}__].leftContainerId}" required>
+                                <option th:each="container : ${containers}" th:value="${container.id}"
+                                        th:text="${container.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="leftTableProp-1">Propiedad</label>
+                            <select class="form-control leftTableProp" id="leftTableProp-1"
+                                    th:field="*{joinPairs[__${0}__].leftContainerProperty}" required>
+                                <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
+                                        th:text="${metadata.propertyName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2"><p>===</p></div>
+                    <div class="col-md-5" id="rightGroup-1">
+                        <div class="form-group">
+                            <label for="rightTableName-1">Dataset</label>
+                            <select class="form-control rightTableName" id="rightTableName-1"
+                                    th:field="*{joinPairs[__${0}__].rightContainerId}" required>
+                                <option th:each="container : ${containers}" th:value="${container.id}"
+                                        th:text="${container.name}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rightTableProp-1">Propiedad</label>
+                            <select class="form-control rightTableProp" id="rightTableProp-1"
+                                    th:field="*{joinPairs[__${0}__].rightContainerProperty}" required>
+                                <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
+                                        th:text="${metadata.propertyName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-lg-right mt-3 mb-4">
+                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="layout :: scripts"></div>
+<script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+
+    const containers = /*[[${containers}]]*/ [];
+
+    /*]]>*/
+
+    const populateTableProperties = (sectionName, element) => {
+        const containerId = element.value;
+        const parentId = element.parentElement.parentElement.id;
+        const propSelect = $(`#${parentId} ${sectionName}`);
+        // Get the selected container
+        const selectedContainer = containers.find(container => container.id === containerId);
+        // Remove current options from select
+        propSelect.empty()
+        // Populate prop select with its property names from the metadata
+        selectedContainer.metadata.forEach(metadata => {
+            let optionElement = $("<option></option>");
+            optionElement.val(metadata.propertyName);
+            optionElement.text(metadata.propertyName);
+            optionElement.appendTo(propSelect);
+        })
+    }
+
+    $(document).ready(function () {
+        $(".leftTableName").on('change', function () {
+            populateTableProperties(".leftTableProp", this);
+        })
+
+        $(".rightTableName").on('change', function () {
+            populateTableProperties(".rightTableProp", this);
+        })
+    });
+
+</script>
+</body>
+</html>

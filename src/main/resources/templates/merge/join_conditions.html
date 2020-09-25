@@ -23,45 +23,49 @@
                     <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Container name" name="name" required>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-5" id="leftGroup-1">
-                        <div class="form-group">
-                            <label for="leftTableName-1">Dataset</label>
-                            <select class="form-control leftTableName" id="leftTableName-1"
-                                    th:field="*{joinPairs[__${0}__].leftContainerId}" required>
-                                <option th:each="container : ${containers}" th:value="${container.id}"
-                                        th:text="${container.name}"></option>
-                            </select>
+                <div id="conditions">
+                    <div class="row condition-container">
+                        <div class="col-md-5 table-selector" id="leftGroup-0">
+                            <div class="form-group">
+                                <label>Dataset</label>
+                                <select class="form-control leftTableName"
+                                        th:field="*{joinPairs[__${0}__].leftContainerId}" required>
+                                    <option th:each="container : ${containers}" th:value="${container.id}"
+                                            th:text="${container.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Propiedad</label>
+                                <select class="form-control leftTableProp"
+                                        th:field="*{joinPairs[__${0}__].leftContainerProperty}" required>
+                                    <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
+                                            th:text="${metadata.propertyName}"></option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="leftTableProp-1">Propiedad</label>
-                            <select class="form-control leftTableProp" id="leftTableProp-1"
-                                    th:field="*{joinPairs[__${0}__].leftContainerProperty}" required>
-                                <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
-                                        th:text="${metadata.propertyName}"></option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2"><p>===</p></div>
-                    <div class="col-md-5" id="rightGroup-1">
-                        <div class="form-group">
-                            <label for="rightTableName-1">Dataset</label>
-                            <select class="form-control rightTableName" id="rightTableName-1"
-                                    th:field="*{joinPairs[__${0}__].rightContainerId}" required>
-                                <option th:each="container : ${containers}" th:value="${container.id}"
-                                        th:text="${container.name}"></option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="rightTableProp-1">Propiedad</label>
-                            <select class="form-control rightTableProp" id="rightTableProp-1"
-                                    th:field="*{joinPairs[__${0}__].rightContainerProperty}" required>
-                                <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
-                                        th:text="${metadata.propertyName}"></option>
-                            </select>
+                        <div class="col-md-2"><p>===</p></div>
+                        <div class="col-md-5 table-selector" id="rightGroup-0">
+                            <div class="form-group">
+                                <label>Dataset</label>
+                                <select class="form-control rightTableName"
+                                        th:field="*{joinPairs[__${0}__].rightContainerId}" required>
+                                    <option th:each="container : ${containers}" th:value="${container.id}"
+                                            th:text="${container.name}"></option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Propiedad</label>
+                                <select class="form-control rightTableProp"
+                                        th:field="*{joinPairs[__${0}__].rightContainerProperty}" required>
+                                    <option th:each="metadata : ${containers[0].metadata}" th:value="${metadata.propertyName}"
+                                            th:text="${metadata.propertyName}"></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <button type="button" class="btn btn-secondary" id="addContition">Agregar condición</button>
 
                 <div class="text-lg-right mt-3 mb-4">
                     <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Crear</button>
@@ -96,14 +100,39 @@
         })
     }
 
-    $(document).ready(function () {
-        $(".leftTableName").on('change', function () {
-            populateTableProperties(".leftTableProp", this);
-        })
+    $("#conditions").on('change', '.leftTableName', function () {
+        populateTableProperties(".leftTableProp", this);
+    })
 
-        $(".rightTableName").on('change', function () {
-            populateTableProperties(".rightTableProp", this);
-        })
+    $("#conditions").on('change', '.rightTableName', function () {
+        populateTableProperties(".rightTableProp", this);
+    })
+
+    $("#addContition").click(function () {
+        $("#conditions .condition-container:last").clone().find(".table-selector").each(function () {
+            let currentId;
+            // Increment parent id
+            $(this).attr('id', function(_, id) {
+                let containerName = id.split('-')[0];
+                currentId = parseInt(id.split('-')[1], 10);
+                return `${containerName}-${currentId + 1}`;
+            });
+            // Edit select inputs
+            $(this).find('select').each(function () {
+                console.log(currentId);
+                $(this).attr('id', function(_, id) {
+                    let leftPart = id.split(`${currentId}`)[0];
+                    let rightPart = id.split(`${currentId}`)[1];
+                    return `${leftPart}${currentId + 1}${rightPart}`;
+                });
+
+                $(this).attr('name', function(_, name) {
+                    let leftPart = name.split(`${currentId}`)[0];
+                    let rightPart = name.split(`${currentId}`)[1];
+                    return `${leftPart}${currentId + 1}${rightPart}`;
+                });
+            });
+        }).end().appendTo("#conditions");
     });
 
 </script>

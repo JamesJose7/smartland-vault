@@ -10,7 +10,7 @@
 
     <div class="row mt-3">
         <div class="col-md-6">
-            <h1>Uniones</h1>
+            <h1>Recursos combinados</h1>
         </div>
         <div class="col-md-6 text-right pt-1">
             <a th:href="@{${newJoinLink}}" class="btn-icon add-container-btn btn btn-success mr-md-2">
@@ -28,14 +28,18 @@
         <table class="table table-hover">
             <thead class="thead-dark">
             <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
+                <th scope="col">Nombre</th>
+                <th scope="col"># datos</th>
+                <th scope="col">Origen</th>
+                <th scope="col">URL</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="mergedContainer : ${mergedContainers}">
-                <td><a th:href="@{|/container/${mergedContainer.id}|}" th:text="${mergedContainer.id}"></a></td>
-                <td th:text="${mergedContainer.name}"></td>
+                <td><a th:href="@{|/container/${mergedContainer.id}|}" th:text="${mergedContainer.name}" class="link"></a></td>
+                <td th:text="${mergedContainer.container.dataCount}"></td>
+                <td th:text="${mergedContainer.container.originType}"></td>
+                <td><a th:href="${mergedContainer.container.sourceUrl}" th:text="${mergedContainer.container.sourceUrl}" class="link" target="_blank"></a></td>
             </tr>
             </tbody>
         </table>

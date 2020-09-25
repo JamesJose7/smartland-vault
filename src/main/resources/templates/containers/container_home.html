@@ -11,9 +11,9 @@
             <h1 th:text="${dataContainer.name}"></h1>
         </div>
         <div class="col-lg-2">
-            <p th:if="${dataContainer.active}" class="container-active text-lg-right">Active <i class="material-icons">check_circle</i>
+            <p th:if="${dataContainer.active}" class="container-active text-lg-right">Público <i class="material-icons">check_circle</i>
             </p>
-            <p th:unless="${dataContainer.active}" class="container-inactive text-lg-right">Inactive <i
+            <p th:unless="${dataContainer.active}" class="container-inactive text-lg-right">Privado <i
                     class="material-icons">check_circle_outline</i></p>
         </div>
     </div>
@@ -25,9 +25,9 @@
                     th:text="${dataContainer.publisher == null || dataContainer.publisher.isEmpty() ? 'Anónimo' : dataContainer.publisher}"></span>
             </p>
             <p th:if="${dataContainer.sourceUrl == null || dataContainer.sourceUrl.isEmpty()}" class="info-item">
-                Source<span>Sin fuente</span></p>
+                Fuente<span>Sin fuente</span></p>
             <p th:unless="${dataContainer.sourceUrl == null  || dataContainer.sourceUrl.isEmpty()}" class="info-item">
-                Source<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}"
+                Fuente<span><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}" class="link"
                                target="_blank"></a></span></p>
             <p class="info-item">Tipo</p>
             <div th:if="${dataContainer.isMerge()}">
@@ -45,7 +45,7 @@
         </div>
         <div class="col-md-8">
             <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a
-                    th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}"
+                    th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}" class="link"
                     target="_blank"></a></span></p>
             <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span
                     th:text="${dataContainer.year}"></span></p>
@@ -89,10 +89,10 @@
             <table class="table table-hover">
                 <thead class="thead-dark">
                 <tr>
-                    <th scope="col">Property</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Data type</th>
+                    <th scope="col">Columna</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Tipo de dato</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -108,7 +108,7 @@
     </div>
     <div th:unless="${inventory != null}" class="mb-5">
         <p>There is no metadata created for this container.</p>
-        <p>Please create one by <a th:href="@{${browseDataLink}}">browsing it's data</a> and selecting the main object
+        <p>Please create one by <a th:href="@{${browseDataLink}}" class="link">browsing it's data</a> and selecting the main object
             to track</p>
     </div>
 

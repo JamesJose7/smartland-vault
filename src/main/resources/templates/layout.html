@@ -21,7 +21,7 @@
 <body>
 
 <div th:fragment="nav">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <a class="navbar-brand" href="#">Smartland Vault</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -30,10 +30,10 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li th:classappend="${#httpServletRequest.servletPath.equals('/') ? 'active' : ''}" class="nav-item">
-                    <a class="nav-link" th:href="@{/}">Home</a>
+                    <a class="nav-link" th:href="@{/}">Recursos</a>
                 </li>
                 <li th:classappend="${#httpServletRequest.servletPath.contains('/merge') ? 'active' : ''}" class="nav-item">
-                    <a class="nav-link" th:href="@{/merge}">Uniones</a>
+                    <a class="nav-link" th:href="@{/merge}">Combinaciones</a>
                 </li>
             </ul>
         </div>

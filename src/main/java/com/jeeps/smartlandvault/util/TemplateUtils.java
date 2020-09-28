@@ -9,7 +9,7 @@ public class TemplateUtils {
 
     public static String formatDate(Date date) {
         if (date == null) return "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - mm:hh:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
         return dateFormat.format(date);
     }
 

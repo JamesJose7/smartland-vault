@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Upload excel container')"></head>
+<body>
+
+<div th:replace="layout :: nav"></div>
+<div class="container">
+
+    <div th:replace="layout :: flash"></div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <h1>Nuevo dataset</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <form th:action="${uploadExcelUrl}" method="post" th:object="${dataContainerForm}"
+                  enctype="multipart/form-data">
+
+                <h3 class="mt-3">Datos generales</h3>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="idInput">ID</label>
+                        <input type="text" class="form-control" id="idInput"
+                               placeholder="ID personalizado" name="id" th:field="*{dataContainer.id}" readonly>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="nameInput">Nombre</label>
+                        <input type="text" class="form-control" id="nameInput" placeholder="Nombre del recurso"
+                               name="name"
+                               th:field="*{dataContainer.name}" required aria-describedby="nameHelp">
+                        <small id="nameHelp" class="form-text text-muted">(Obligatorio)</small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea name="description" id="description" cols="30" rows="6" class="form-control"
+                              th:field="*{dataContainer.description}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="licenceType">Palabras clave</label>
+                    <input type="text" class="form-control" id="keywords" aria-describedby="keywordsHelp"
+                           placeholder="palabra clave 1, palabra 2, ..." name="licenceType" th:field="*{keywordsRaw}">
+                    <small id="keywordsHelp" class="form-text text-muted">(Separadas por coma)</small>
+                </div>
+
+                <h3 class="mt-3">Observatorio</h3>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <label for="observatory">Seleccionar observatorio</label>
+                        <select class="form-control" id="observatory" name="observatory"
+                                th:field="*{dataContainer.observatory}" required aria-describedby="observatoryHelp">
+                            <option th:each="observatory : ${observatories}" th:value="${observatory.urlApi}"
+                                    th:text="${observatory.nameObservatorio}"></option>
+                        </select>
+                        <small id="observatoryHelp" class="form-text text-muted">(Obligatorio)</small>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="observatoryYear">Año</label>
+                        <input type="number" class="form-control" id="observatoryYear" placeholder="Año" name="year"
+                               th:field="*{dataContainer.year}" aria-describedby="yearHelp" required>
+                        <small id="yearHelp" class="form-text text-muted">(Obligatorio)</small>
+                    </div>
+                </div>
+
+                <h3 class="mt-3">Información adicional</h3>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="publisher">Editor</label>
+                        <input type="text" class="form-control" id="publisher"
+                               placeholder="Nombre del editor" name="publisher" th:field="*{dataContainer.publisher}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="sourceUrl">Fuente</label>
+                        <input type="text" class="form-control" id="sourceUrl"
+                               placeholder="URL de referencia" name="sourceUrl" th:field="*{dataContainer.sourceUrl}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="licenceType">Licencia</label>
+                    <input type="text" class="form-control" id="licenceType"
+                           placeholder="Publisher's name" name="licenceType" th:field="*{dataContainer.licenseType}">
+                </div>
+
+                <div class="text-lg-right mt-3 mb-4">
+                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.custom-file-input').addEventListener('change', function (e) {
+        var fileName = document.getElementById("excelFile").files[0].name;
+        var nextSibling = e.target.nextElementSibling
+        nextSibling.innerText = fileName
+    })
+</script>
+<div th:replace="layout :: scripts"></div>
+</body>
+</html>

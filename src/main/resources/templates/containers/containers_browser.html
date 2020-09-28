@@ -39,7 +39,8 @@
                 <td><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}" class="link"
                        target="_blank"></a></td>
                 <td class="text-right">
-                    <a href="" class="btn btn-icon btn-table edit-color" data-toggle="tooltip" data-placement="left" title="Editar">
+                    <a href="" class="btn btn-icon btn-table edit-color" data-toggle="tooltip" data-placement="left" title="Editar"
+                       th:href="@{|/container/edit/${dataContainer.id}|}">
                         <i class="material-icons">create</i>
                     </a>
                     <a href="" class="btn btn-icon btn-table delete-color" data-toggle="tooltip" data-placement="left" title="Eliminar"

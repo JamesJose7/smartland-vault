@@ -13,10 +13,7 @@ import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
 import com.jeeps.smartlandvault.sql.item.Item;
 import com.jeeps.smartlandvault.sql.item.ItemRepository;
-import com.jeeps.smartlandvault.util.ExcelSheetReader;
-import com.jeeps.smartlandvault.util.InventoryHelper;
-import com.jeeps.smartlandvault.util.KeywordsHelper;
-import com.jeeps.smartlandvault.util.UrlUtils;
+import com.jeeps.smartlandvault.util.*;
 import com.jeeps.smartlandvault.web.FlashMessage;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -94,6 +91,53 @@ public class ContainerController {
             logger.error("Could not retrieve observatories from API", e);
         }
         return "containers/excel_upload_form";
+    }
+
+    @GetMapping("/container/edit/{id}")
+    public String editContainer(@PathVariable("id") String id,
+                                RedirectAttributes redirectAttributes,
+                                Model model) {
+        DataContainer dataContainer = dataContainerRepository.findById(id).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+            return "redirect:/";
+        }
+
+        DataContainerForm dataContainerForm = new DataContainerForm();
+        // Get previous keywords
+        dataContainerForm.setKeywordsRaw(KeywordsHelper.unprocessKeywords(dataContainer.getKeywords()));
+        dataContainerForm.setDataContainer(dataContainer);
+
+        model.addAttribute("dataContainerForm", dataContainerForm);
+        model.addAttribute("uploadExcelUrl", String.format("%s/container/edit/excel", contextPath));
+        // Get list of observatories
+        try {
+            model.addAttribute("observatories", observatoriesService.getObservatories());
+        } catch (IOException e) {
+            model.addAttribute("observatories", new ArrayList<Observatory>());
+            logger.error("Could not retrieve observatories from API", e);
+        }
+        return "containers/excel_edit_form";
+    }
+
+    @PostMapping("/container/edit/excel")
+    public String updateContainer(
+            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) {
+        // New container data received from form
+        DataContainer newDataContainer = dataContainerForm.getDataContainer();
+        // Get previous data and transfer the form data
+        DataContainer dataContainer = dataContainerRepository.findById(newDataContainer.getId()).orElse(new DataContainer());
+        FormHelper.transferContainerFormData(newDataContainer, dataContainer);
+        // Parse keywords
+        dataContainer.setKeywords(KeywordsHelper.processKeywords(dataContainerForm.getKeywordsRaw()));
+        // New update date
+        dataContainer.setDateUpdated(new Date());
+        dataContainerRepository.save(dataContainer);
+
+        redirectAttributes.addFlashAttribute("flash",
+                new FlashMessage("Recurso actualizado correctamente", FlashMessage.Status.SUCCESS));
+        return "redirect:/";
     }
 
     // Web Forms
@@ -174,7 +218,7 @@ public class ContainerController {
 
     @GetMapping("/container/{id}")
     public String viewContainer(@PathVariable("id") String id,
-            Model model) {
+                                Model model) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
         if (!dataContainerOptional.isPresent())
             throw new ResourceNotFoundException();

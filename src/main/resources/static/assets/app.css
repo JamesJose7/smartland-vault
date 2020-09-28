@@ -69,6 +69,27 @@ a.link {
     vertical-align: middle;
 }
 
+.btn-table {
+    border-radius: 100%;
+    border: none;
+    height: 35px;
+    width: 35px;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    margin-left: 4px;
+    box-shadow: 0 0 5px 2px rgba(0,0,0,.1);
+}
+
+.btn-table i {
+    font-size: 20px;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+}
+
 .submit-btn {
     width: 100%;
 }
@@ -102,6 +123,22 @@ a.link {
 .table thead th {
     background-color: #003F72 !important;
     border-color: #003F72 !important;
+}
+
+.table tbody td {
+    vertical-align: middle;
+}
+
+.edit-color {
+    background-color: #00BCD4 !important;
+}
+
+.delete-color {
+    background-color: #F44336 !important;
+}
+
+.visualize-color {
+    background-color: #26A69A !important;
 }
 
 /* Containers browser page */

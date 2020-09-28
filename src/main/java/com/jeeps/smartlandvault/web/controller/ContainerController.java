@@ -69,6 +69,7 @@ public class ContainerController {
     public String containersBrowser(Model model) {
         model.addAttribute("dataContainers", dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalse());
         model.addAttribute("addNewContainerLink", "/container/selectType");
+        model.addAttribute("contextPath", contextPath);
         return "containers/containers_browser";
     }
 

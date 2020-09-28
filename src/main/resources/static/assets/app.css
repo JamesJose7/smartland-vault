@@ -14,23 +14,25 @@ a.link {
     color: #003F72;
 }
 
-.btn {
+.btn-primary, .btn-success {
     background-color: #26a69a !important;
     border-color: #26a69a !important;
 }
 
-.btn:hover {
+.btn-primary:hover, .btn-success {
     background-color: #2BBBAD !important;
     border-color: #2BBBAD !important;
 }
 
 .btn.btn-outline-dark {
     background-color: #fff !important;
+    border-color: #26a69a !important;
     color: #000;
 }
 
 .btn.btn-outline-dark:hover {
     background-color: #26a69a !important;
+    border-color: #26a69a !important;
     color: #fff;
 }
 

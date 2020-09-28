@@ -1,6 +1,7 @@
 package com.jeeps.smartlandvault.fileupload;
 
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
@@ -19,6 +20,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+
+import static com.jeeps.smartlandvault.util.GenericJsonMapper.getPropertiesFromTree;
+import static com.jeeps.smartlandvault.util.InventoryHelper.createItemsFromProperties;
 
 @Service
 public class ExcelTransformerService {
@@ -59,8 +64,13 @@ public class ExcelTransformerService {
             List<Item> items = excelTableData.getItemsMetadata();
             if (items != null) {
                 items.forEach(item -> item.setContainerInventory(containerInventory));
-                containerInventory.setItems(items);
+            } else {
+                // Create metadata properties from data
+                Map<String, String> properties =
+                        getPropertiesFromTree((LinkedTreeMap<Object, Object>) dataContainer.getData().get(0));
+                items = createItemsFromProperties(properties, containerInventory);
             }
+            containerInventory.setItems(items);
             containerInventoryRepository.save(containerInventory);
 
             dataContainer.setMetadata(InventoryHelper.getMetadataFromInventory(containerInventory));

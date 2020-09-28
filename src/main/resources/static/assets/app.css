@@ -200,6 +200,24 @@ a.link {
     margin-right: 5px;
 }
 
+.dt-buttons {
+    margin-left: 8px;
+    display: inline-block !important;
+}
+
+.dt-buttons button {
+    border: 1px solid #26a69a !important;
+    border-radius: .25rem;
+    background-color: #fff !important;
+    color: #000;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.dt-buttons button:hover {
+    background-color: #26a69a !important;
+    color: #fff;
+}
+
 /* Join page */
 .condition-container {
     background: rgba(200,200,200,.2);

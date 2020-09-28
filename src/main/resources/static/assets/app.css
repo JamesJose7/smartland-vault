@@ -129,15 +129,15 @@ a.link {
     vertical-align: middle;
 }
 
-.edit-color {
+.edit-color, .edit-color:hover {
     background-color: #00BCD4 !important;
 }
 
-.delete-color {
+.delete-color, .delete-color:hover {
     background-color: #F44336 !important;
 }
 
-.visualize-color {
+.visualize-color, .visualize-color:hover {
     background-color: #26A69A !important;
 }
 

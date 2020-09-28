@@ -36,7 +36,9 @@ public class DataContainer {
     private String fileType;
     private String licenseType;
 
-    private boolean isMerge;
+    private boolean merge;
+    private boolean deleted;
+
     @JsonIgnore
     private List<Object> data;
 
@@ -226,11 +228,27 @@ public class DataContainer {
     }
 
     public boolean isMerge() {
-        return isMerge;
+        return merge;
+    }
+
+    public boolean getMerge() {
+        return merge;
     }
 
     public void setMerge(boolean merge) {
-        isMerge = merge;
+        this.merge = merge;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public List<Object> getData() {

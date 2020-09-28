@@ -70,7 +70,7 @@ public class ContainerController {
 
     @GetMapping("/")
     public String containersBrowser(Model model) {
-        model.addAttribute("dataContainers", dataContainerRepository.findAll());
+        model.addAttribute("dataContainers", dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalse());
         model.addAttribute("addNewContainerLink", "/container/selectType");
         return "containers/containers_browser";
     }
@@ -111,7 +111,7 @@ public class ContainerController {
         // Check MIME type to match the accepted ones
         if (file.getContentType() == null) {
             redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage("Could not determine file's MIME type, please try again", FlashMessage.Status.FAILURE));
+                    new FlashMessage("No se pudo determinar el tipo de archivo, por favor intente de nuevo", FlashMessage.Status.FAILURE));
             return failureRedirect;
         }
         if (!ExcelSheetReader.isExcelMimeType(file.getContentType())) {
@@ -132,7 +132,7 @@ public class ContainerController {
             // Transform excel
             excelTransformerService.transform(file.getInputStream(), dataContainer, fileExtension);
             redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage("Excel container added successfully", FlashMessage.Status.SUCCESS));
+                    new FlashMessage("Recurso agregado correctamente", FlashMessage.Status.SUCCESS));
             return successRedirect;
         } catch (IncorrectExcelFormatException | IOException e) {
             logger.error(e.getMessage());
@@ -161,14 +161,14 @@ public class ContainerController {
 
         if (!UrlUtils.isValidUrl(restUrl)) {
             redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage("Please enter a valid URL", FlashMessage.Status.FAILURE));
+                    new FlashMessage("Por favor ingrese una URL válida", FlashMessage.Status.FAILURE));
             return failureRedirect;
         }
 
         // TODO: Add a service to extract and store the contents of the rest Endpoint
         restExtractorService.extractRestData(restUrl, id, name, publisher, sourceUrl);
         redirectAttributes.addFlashAttribute("flash",
-                new FlashMessage("REST container addded successfully", FlashMessage.Status.SUCCESS));
+                new FlashMessage("Recurso REST agregado correctamente", FlashMessage.Status.SUCCESS));
         return successRedirect;
     }
 
@@ -280,5 +280,25 @@ public class ContainerController {
         dataContainerRepository.save(dataContainer);
         logger.info(String.format("Request :%s | from id: %s", selectedTree, containerId));
         return String.format("redirect:/container/%s/browseData", containerId);
+    }
+
+    @GetMapping("/container/{id}/remove")
+    public String logicalDelete(@PathVariable(name = "id") String containerId,
+                                RedirectAttributes redirectAttributes) {
+        // Get container
+        DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+        } else {
+            // Logical delete
+            dataContainer.setDeleted(true);
+            dataContainerRepository.save(dataContainer);
+
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Recurso borrado correctamente", FlashMessage.Status.SUCCESS));
+        }
+
+        return "redirect:/";
     }
 }

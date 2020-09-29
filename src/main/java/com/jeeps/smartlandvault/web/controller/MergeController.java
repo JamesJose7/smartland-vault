@@ -109,7 +109,7 @@ public class MergeController {
     }
 
     @GetMapping("/merge/join")
-    public String displayJoinCandidates(@RequestParam("containerId") String containerIds, Model model) {
+    public String createJoinConditions(@RequestParam("containerId") String containerIds, Model model) {
 //        List<JoinCandidate> joinCandidates = mergeService.findJoinCandidates(containerId);
         // Get all containers by ID
         String[] containerIdsArray = containerIds.split(",");
@@ -126,7 +126,7 @@ public class MergeController {
     }
 
     @PostMapping("/merge/join/create")
-    public String unionContainers(RedirectAttributes redirectAttributes,
+    public String createJoin(RedirectAttributes redirectAttributes,
                                   JoinForm joinForm) {
         // Loop through all the join table pairs
         DataContainer joinResult = null;

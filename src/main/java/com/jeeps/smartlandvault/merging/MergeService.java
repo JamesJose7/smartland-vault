@@ -109,7 +109,13 @@ public class MergeService {
                     return originalContainerData;
                 })
                 .collect(Collectors.toList());
+        // Remove null objects and empty rows
         newValues.removeIf(Objects::isNull);
+        newValues.removeIf(rowDataRaw -> {
+            LinkedHashMap<String, Object> row = (LinkedHashMap) rowDataRaw;
+            return row.isEmpty();
+        });
+
         originalContainer.setData(newValues);
         return originalContainer;
     }

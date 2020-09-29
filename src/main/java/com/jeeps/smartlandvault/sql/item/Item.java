@@ -66,4 +66,8 @@ public class Item extends BaseEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public Item createCopy(ContainerInventory containerInventory) {
+        return new Item(containerInventory, this.propertyName, this.dataType);
+    }
 }

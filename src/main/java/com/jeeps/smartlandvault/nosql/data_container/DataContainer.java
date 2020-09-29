@@ -36,6 +36,7 @@ public class DataContainer {
     private String fileType;
     private String licenseType;
 
+    private boolean duplicate;
     private boolean merge;
     private boolean deleted;
 
@@ -89,6 +90,10 @@ public class DataContainer {
             this.id = generateRandomId();
         else
             this.id = id.isEmpty() ? generateRandomId() : id;
+    }
+
+    public void setNewId() {
+        this.id = generateRandomId();
     }
 
     public void setNewUnionId() {
@@ -225,6 +230,18 @@ public class DataContainer {
 
     public void setLicenseType(String licenseType) {
         this.licenseType = licenseType;
+    }
+
+    public boolean isDuplicate() {
+        return duplicate;
+    }
+
+    public boolean getDuplicate() {
+        return duplicate;
+    }
+
+    public void setDuplicate(boolean duplicate) {
+        this.duplicate = duplicate;
     }
 
     public boolean isMerge() {

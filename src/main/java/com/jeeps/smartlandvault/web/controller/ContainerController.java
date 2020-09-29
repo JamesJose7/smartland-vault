@@ -347,4 +347,37 @@ public class ContainerController {
 
         return "redirect:/" + redirect;
     }
+
+    /* Tools */
+    @GetMapping("/container/duplicate/{id}")
+    public String duplicateContainer(@PathVariable(name = "id") String containerId,
+                                     @RequestParam(name = "redirect", required = false, defaultValue = "") String redirect,
+                                     RedirectAttributes redirectAttributes) {
+        // Get container
+        DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+        } else {
+            ContainerInventory containerInventory = containerInventoryRepository.findByContainerId(dataContainer.getId()).orElse(null);
+            // Duplicate container
+            dataContainer.setNewId();
+            dataContainer.setName(String.format("%s - copia", dataContainer.getName()));
+            dataContainer.setDuplicate(true);
+            DataContainer newContainer = dataContainerRepository.save(dataContainer);
+            // Duplicate inventory
+            if (containerInventory != null) {
+                containerInventory.setContainerId(newContainer.getId());
+                ContainerInventory inventoryCopy = containerInventory.createCopy();
+                try {
+                    containerInventoryRepository.save(inventoryCopy);
+                } catch (Exception e) {}
+            }
+
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Recurso duplicado correctamente", FlashMessage.Status.SUCCESS));
+        }
+
+        return "redirect:/" + redirect;
+    }
 }

@@ -123,8 +123,9 @@ a.link {
 }
 
 .table thead th {
-    background-color: #003F72 !important;
-    border-color: #003F72 !important;
+    background-color: rgba(200,200,200,.3) !important;
+    border-color: rgba(200,200,200,.3) !important;
+    color: black !important;
 }
 
 .table tbody td {
@@ -235,6 +236,17 @@ a.link {
 
 .container-inactive {
     color: rgba(50,50,50, 0.26);
+}
+
+.tools-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: 15px;
+}
+
+.tools-button:active {
+    color: #000;
 }
 
 .file-icon {

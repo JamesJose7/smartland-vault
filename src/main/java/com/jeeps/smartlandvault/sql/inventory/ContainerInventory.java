@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class ContainerInventory extends BaseEntity {
@@ -58,5 +59,16 @@ public class ContainerInventory extends BaseEntity {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public ContainerInventory createCopy() {
+        ContainerInventory newInventory =
+                new ContainerInventory(this.containerId, this.name, this.mainDataProperty);
+        // Copy items
+        List<Item> newItems = this.items.stream()
+                .map(item -> item.createCopy(newInventory))
+                .collect(Collectors.toList());
+        newInventory.setItems(newItems);
+        return newInventory;
     }
 }

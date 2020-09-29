@@ -329,6 +329,7 @@ public class ContainerController {
 
     @GetMapping("/container/{id}/remove")
     public String logicalDelete(@PathVariable(name = "id") String containerId,
+                                @RequestParam(name = "redirect", required = false, defaultValue = "") String redirect,
                                 RedirectAttributes redirectAttributes) {
         // Get container
         DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
@@ -344,6 +345,6 @@ public class ContainerController {
                     new FlashMessage("Recurso borrado correctamente", FlashMessage.Status.SUCCESS));
         }
 
-        return "redirect:/";
+        return "redirect:/" + redirect;
     }
 }

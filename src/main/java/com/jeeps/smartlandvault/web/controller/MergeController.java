@@ -43,9 +43,10 @@ public class MergeController {
     @GetMapping("/merge")
     public String mergeMenu(Model model) {
 
-        model.addAttribute("mergedContainers", mergedContainerRepository.findAll());
+        model.addAttribute("dataContainers", dataContainerRepository.findAllByDeletedIsFalseAndMergeIsTrue());
         model.addAttribute("newUnionLink", "/merge/union/new");
         model.addAttribute("newJoinLink", "/merge/join/new");
+        model.addAttribute("contextPath", contextPath);
         return "merge/merge_home";
     }
 

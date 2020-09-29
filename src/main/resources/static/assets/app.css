@@ -131,6 +131,10 @@ a.link {
     vertical-align: middle;
 }
 
+.form-check-cell {
+    vertical-align: unset !important;
+}
+
 .edit-color, .edit-color:hover {
     background-color: #00BCD4 !important;
 }

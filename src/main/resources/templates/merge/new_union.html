@@ -8,9 +8,14 @@
 
     <div th:replace="layout :: flash"></div>
 
-    <div class="row mt-3">
+    <div class="row mt-3 mb-2">
         <div class="col-12">
             <h1>Nueva unión</h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <p>Seleccionar el recurso principal que desea unir y presionar <b>Siguiente</b></p>
         </div>
     </div>
 
@@ -22,23 +27,23 @@
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col"></th>
-                        <th scope="col">ID</th>
                         <th scope="col">Nombre</th>
-                        <th scope="col"># Datos</th>
+                        <th scope="col"># datos</th>
+                        <th scope="col"># columnas</th>
                     </tr>
                     </thead>
                     <tbody class="container-options">
                     <tr th:each="container, stat : ${containers}" class="cursor-pointer">
-                        <td>
+                        <td class="form-check-cell">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="containerId"
                                        th:id="|container-${stat.index}|"
                                        th:value="${container.id}" required>
                             </div>
                         </td>
-                        <td th:text="${container.id}"></td>
                         <td th:text="${container.name}"></td>
                         <td th:text="${container.dataCount}"></td>
+                        <td th:text="${container.propertyCount}"></td>
                     </tr>
                     </tbody>
                 </table>

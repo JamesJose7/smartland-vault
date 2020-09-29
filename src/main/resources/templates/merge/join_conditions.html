@@ -23,11 +23,17 @@
                     <input type="text" th:field="*{name}" class="form-control" id="nameInput" placeholder="Nuevo nombre de recurso" name="name" required>
                 </div>
 
+                <div class="row mb-1">
+                    <div class="col-12 mt-3">
+                        <p>Cada condición consiste en seleccionar dos recursos con las propiedades que se desea combinar.</p>
+                    </div>
+                </div>
+
                 <div id="conditions">
-                    <div class="row condition-container">
+                    <div class="row condition-container mt-1">
                         <div class="col-md-5 table-selector" id="leftGroup-0">
                             <div class="form-group">
-                                <label>Dataset</label>
+                                <label>Recurso</label>
                                 <select class="form-control leftTableName"
                                         th:field="*{joinPairs[__${0}__].leftContainerId}" required>
                                     <option th:each="container : ${containers}" th:value="${container.id}"
@@ -48,7 +54,7 @@
                         </div>
                         <div class="col-md-5 table-selector" id="rightGroup-0">
                             <div class="form-group">
-                                <label>Dataset</label>
+                                <label>Recurso</label>
                                 <select class="form-control rightTableName"
                                         th:field="*{joinPairs[__${0}__].rightContainerId}" required>
                                     <option th:each="container : ${containers}" th:value="${container.id}"

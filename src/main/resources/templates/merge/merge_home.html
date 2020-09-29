@@ -8,18 +8,20 @@
 
     <div th:replace="layout :: flash"></div>
 
-    <div class="row mt-3">
+    <div class="row mt-3 mb-3">
         <div class="col-md-6">
             <h1>Recursos combinados</h1>
         </div>
         <div class="col-md-6 text-right pt-1">
-            <a th:href="@{${newJoinLink}}" class="btn-icon add-container-btn btn btn-success mr-md-2">
+            <a th:href="@{${newJoinLink}}" class="btn-icon add-container-btn btn btn-success mr-md-2" data-placement="bottom"
+               data-toggle="tooltip" data-html="true" title="Combinar dos o más  recursos que tengan algún <b>campo en común</b>">
                 <i class="material-icons">add</i>
-                Nuevo Join?
+                Combinar
             </a>
-            <a th:href="@{${newUnionLink}}" class="btn-icon add-container-btn btn btn-success">
+            <a th:href="@{${newUnionLink}}" class="btn-icon add-container-btn btn btn-success" data-placement="bottom"
+               data-toggle="tooltip" data-html="true" title="Unir dos o más  recursos que tengan la <b>misma estructura</b>">
                 <i class="material-icons">add</i>
-                Nueva unión
+                Unir
             </a>
         </div>
     </div>

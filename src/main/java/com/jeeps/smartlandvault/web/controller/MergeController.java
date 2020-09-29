@@ -54,7 +54,7 @@ public class MergeController {
 
     @GetMapping("/merge/union/new")
     public String newUnion(Model model) {
-        model.addAttribute("containers", dataContainerRepository.findAll());
+        model.addAttribute("containers", dataContainerRepository.findAllByDeletedIsFalse());
         model.addAttribute("formUrl", contextPath + "/merge/union");
         return "merge/new_union";
     }
@@ -103,7 +103,7 @@ public class MergeController {
 
     @GetMapping("/merge/join/new")
     public String newJoin(Model model) {
-        model.addAttribute("containers", dataContainerRepository.findAll());
+        model.addAttribute("containers", dataContainerRepository.findAllByDeletedIsFalse());
         model.addAttribute("formUrl", contextPath + "/merge/join");
         return "merge/new_join";
     }

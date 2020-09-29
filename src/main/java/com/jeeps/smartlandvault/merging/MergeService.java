@@ -19,7 +19,7 @@ public class MergeService {
         Optional<DataContainer> containerOptional = dataContainerRepository.findById(containerId);
         if (!containerOptional.isPresent()) return null;
         DataContainer selectedContainer = containerOptional.get();
-        List<DataContainer> allContainers = dataContainerRepository.findAll();
+        List<DataContainer> allContainers = dataContainerRepository.findAllByDeletedIsFalse();
 
         // Find containers with the same data structure
         if (selectedContainer.getMetadata() == null) return Collections.emptyList();

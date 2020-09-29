@@ -7,6 +7,7 @@ import java.util.List;
 
 @RepositoryRestResource
 public interface DataContainerRepository extends MongoRepository<DataContainer, String> {
+    List<DataContainer> findAllByDeletedIsFalse();
     List<DataContainer> findAllByDeletedIsFalseAndMergeIsFalse();
     List<DataContainer> findAllByDeletedIsFalseAndMergeIsTrue();
 }

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head('Editar columnas')"></head>
+<body>
+
+<div th:replace="layout :: nav"></div>
+<div class="container">
+
+    <div th:replace="layout :: flash"></div>
+
+    <div class="row mt-3 mb-2">
+        <div class="col-12">
+            <h1 th:text="|Editar columnas de ${dataContainer.name}|"></h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12">
+            <p>Seleccionar las columnas que se desea eliminar</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <form th:action="${formUrl}" method="post" th:object="${columnChangesForm}">
+                <input type="hidden" name="containerId" th:value="${dataContainer.id}">
+
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Columna</th>
+                        <th scope="col">Tipo de dato</th>
+                    </tr>
+                    </thead>
+                    <tbody class="container-options">
+                    <tr th:each="column, stat : ${dataContainer.metadata}" class="cursor-pointer">
+                        <td class="form-check-cell">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" th:field="*{selectedColumns[__${stat.index}__]}"
+                                       th:id="|column-${stat.index}|" th:value="${column.propertyName}">
+                            </div>
+                        </td>
+                        <td th:text="${column.propertyName}"></td>
+                        <td th:text="${column.dataType}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="text-lg-right mt-3 mb-4">
+                    <button type="submit" class="btn btn-success d-lg-inline d-block submit-btn">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="layout :: scripts"></div>
+<script>
+    $('.container-options tr').click(function () {
+        let checkbox = $(this).find('td input[type=checkbox]');
+        let checkedStatus = checkbox.prop('checked');
+        checkbox.prop('checked', !checkedStatus);
+    });
+    $( document ).ready(function() {
+        var checkboxes = document.getElementsByTagName('input');
+        for (var i=0; i<checkboxes.length; i++)  {
+            if (checkboxes[i].type == 'checkbox')   {
+                checkboxes[i].checked = false;
+            }
+        }
+    });
+</script>
+</body>
+</html>

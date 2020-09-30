@@ -1,5 +1,6 @@
 package com.jeeps.smartlandvault.web.controller;
 
+import com.jeeps.smartlandvault.container_tools.ColumnChangesForm;
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
@@ -379,5 +380,75 @@ public class ContainerController {
         }
 
         return "redirect:/" + redirect;
+    }
+
+    @GetMapping("/container/edit/columns/{id}")
+    public String editColumns(@PathVariable(name = "id") String containerId,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        // Get container
+        DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+            return "redirect:/";
+        }
+
+        model.addAttribute("formUrl", contextPath + "/container/edit/columns/save");
+        model.addAttribute("columnChangesForm", new ColumnChangesForm());
+        model.addAttribute("dataContainer", dataContainer);
+
+        return "containers/container_column_editor";
+    }
+
+    @PostMapping("/container/edit/columns/save")
+    public String saveColumnsChanges(ColumnChangesForm columnChangesForm,
+                                     RedirectAttributes redirectAttributes) {
+        String containerId = columnChangesForm.getContainerId();
+        // Check if at least one column was selected
+        List<String> selectedColumns = columnChangesForm.getSelectedColumns();
+        selectedColumns.removeIf(Objects::isNull);
+        if (selectedColumns.isEmpty()) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Por favor seleccionar al menos una columna", FlashMessage.Status.FAILURE));
+            return "redirect:/container/edit/columns/" + containerId;
+        }
+        // Get container
+        DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+            return "redirect:/";
+        }
+
+        // Delete columns from metadata
+        dataContainer.getMetadata().removeIf(column -> selectedColumns.contains(column.getPropertyName()));
+        // Delete data column
+        for (Object rowDataRaw : dataContainer.getData()) {
+            LinkedHashMap<String, Object> dataRow = (LinkedHashMap) rowDataRaw;
+            selectedColumns.forEach(dataRow::remove);
+        }
+        // Update number of columns
+        dataContainer.setPropertyCount(dataContainer.getMetadata().size());
+
+        // Delete columns from inventory
+        ContainerInventory inventory = containerInventoryRepository.findByContainerId(containerId).orElse(null);
+        if (inventory != null) {
+            Map<String, String> properties = getPropertiesFromTree(getSelectedTree(dataContainer.getData(), inventory.getMainDataProperty()));
+            List<Item> items = createItemsFromProperties(properties, inventory);
+            // Delete previous items before saving
+            if (inventory.getItems() != null)
+                itemRepository.deleteAllByContainerInventory(inventory);
+            inventory.setItems(items);
+            // Save or update inventory
+            containerInventoryRepository.save(inventory);
+        }
+
+        dataContainerRepository.save(dataContainer);
+
+        redirectAttributes.addFlashAttribute("flash",
+                new FlashMessage("Columnas borradas correctamente", FlashMessage.Status.SUCCESS));
+
+        return "redirect:/container/" + containerId;
     }
 }

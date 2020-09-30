@@ -6,6 +6,8 @@ import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerForm;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
+import com.jeeps.smartlandvault.nosql.license_type.LicenseType;
+import com.jeeps.smartlandvault.nosql.license_type.LicenseTypeRepository;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
@@ -56,6 +58,8 @@ public class ContainerController {
     private ContainerInventoryRepository containerInventoryRepository;
     @Autowired
     private ItemRepository itemRepository;
+    @Autowired
+    private LicenseTypeRepository licenseTypeRepository;
 
     @Autowired
     private ObservatoriesService observatoriesService;
@@ -85,6 +89,7 @@ public class ContainerController {
     public String addExcelContainer(Model model) {
         model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
         model.addAttribute("dataContainerForm", new DataContainerForm());
+        model.addAttribute("licenses", licenseTypeRepository.findAll());
         // Get list of observatories
         try {
             model.addAttribute("observatories", observatoriesService.getObservatories());
@@ -113,6 +118,7 @@ public class ContainerController {
 
         model.addAttribute("dataContainerForm", dataContainerForm);
         model.addAttribute("uploadExcelUrl", String.format("%s/container/edit/excel", contextPath));
+        model.addAttribute("licenses", licenseTypeRepository.findAll());
         // Get list of observatories
         try {
             model.addAttribute("observatories", observatoriesService.getObservatories());
@@ -237,6 +243,10 @@ public class ContainerController {
                 logger.error("Error retrieving observatory's details", e);
             }
         }
+
+        // Get license name
+        LicenseType license = licenseTypeRepository.findById(dataContainer.getLicenseType()).orElse(new LicenseType("", ""));
+        model.addAttribute("license", license.getName());
 
         // Get download URL
         String fileRelativeUrl = dataContainer.getFileUrl().replace(contextPath, "");

@@ -67,8 +67,7 @@
                     target="_blank"></a></span></p>
             <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span
                     th:text="${dataContainer.year}"></span></p>
-            <p class="info-item">Licencia<span
-                    th:text="${dataContainer.licenseType != null ? dataContainer.licenseType : 'N/A'}"></span>
+            <p class="info-item">Licencia<span th:text="${license}"></span>
             </p>
             <p class="info-item">Descripción<span th:text="${dataContainer.description}"></span></p>
         </div>

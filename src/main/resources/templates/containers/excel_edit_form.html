@@ -80,8 +80,11 @@
                 </div>
                 <div class="form-group">
                     <label for="licenceType">Licencia</label>
-                    <input type="text" class="form-control" id="licenceType"
-                           placeholder="Publisher's name" name="licenceType" th:field="*{dataContainer.licenseType}">
+                    <select class="form-control" id="licenceType" name="licenceType"
+                            th:field="*{dataContainer.licenseType}" required>
+                        <option th:each="license : ${licenses}" th:value="${license.id}"
+                                th:text="${license.name}"></option>
+                    </select>
                 </div>
 
                 <div class="text-lg-right mt-3 mb-4">

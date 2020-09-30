@@ -29,6 +29,7 @@
                 </a>
 
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" th:href="@{|/container/edit/${dataContainer.id}|}">Editar</a>
                     <a class="dropdown-item" th:href="@{|/container/duplicate/${dataContainer.id}|}">Duplicar</a>
                     <a class="dropdown-item" th:href="@{|/container/edit/columns/${dataContainer.id}|}"
                     th:if="${dataContainer.isDuplicate() || dataContainer.isMerge()}" >Eliminar columnas</a>

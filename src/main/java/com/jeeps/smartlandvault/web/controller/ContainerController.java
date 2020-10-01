@@ -143,6 +143,7 @@ public class ContainerController {
             dataContainer.setFileUrl(fileUrl);
             dataContainer.setFileType(fileExtension);
             dataContainer.setDateCreated(new Date());
+            dataContainer.setUserToken(userToken);
             // Transform excel
             excelTransformerService.transform(file.getInputStream(), dataContainer, fileExtension);
             redirectAttributes.addFlashAttribute("flash",

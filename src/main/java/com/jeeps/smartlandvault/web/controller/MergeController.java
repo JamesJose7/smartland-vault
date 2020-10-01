@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -40,45 +41,50 @@ public class MergeController {
     private DataContainerRepository dataContainerRepository;
 
 
-    @GetMapping("/merge")
-    public String mergeMenu(Model model) {
+    @GetMapping("/merge/{userToken}")
+    public String mergeMenu(Model model, @PathVariable("userToken") String userToken) {
 
         model.addAttribute("dataContainers", dataContainerRepository.findAllByDeletedIsFalseAndMergeIsTrue());
-        model.addAttribute("newUnionLink", "/merge/union/new");
-        model.addAttribute("newJoinLink", "/merge/join/new");
+        model.addAttribute("newUnionLink", "/merge/union/new/" + userToken) ;
+        model.addAttribute("newJoinLink", "/merge/join/new/" + userToken);
+        model.addAttribute("userToken", userToken);
         model.addAttribute("contextPath", contextPath);
         return "merge/merge_home";
     }
 
     /****** UNION *******/
 
-    @GetMapping("/merge/union/new")
-    public String newUnion(Model model) {
+    @GetMapping("/merge/union/new/{userToken}")
+    public String newUnion(Model model, @PathVariable("userToken") String userToken) {
         model.addAttribute("containers", dataContainerRepository.findAllByDeletedIsFalse());
-        model.addAttribute("formUrl", contextPath + "/merge/union");
+        model.addAttribute("formUrl", contextPath + "/merge/union/" + userToken);
         return "merge/new_union";
     }
 
-    @GetMapping("/merge/union")
-    public String displayUnionCandidates(@RequestParam("containerId") String containerId, Model model) {
+    @GetMapping("/merge/union/{userToken}")
+    public String displayUnionCandidates(@RequestParam("containerId") String containerId,
+                                         @PathVariable("userToken") String userToken,
+                                         Model model) {
         List<DataContainer> unionCandidates = mergeService.findUnionCandidates(containerId);
         DataContainer originalContainer = dataContainerRepository.findById(containerId).orElse(new DataContainer());
         UnionForm unionForm = new UnionForm(originalContainer, unionCandidates);
 
         model.addAttribute("candidates", unionCandidates);
-        model.addAttribute("formUrl", contextPath + "/merge/union/create");
+        model.addAttribute("formUrl", contextPath + "/merge/union/create/" + userToken);
         model.addAttribute("unionForm", unionForm);
         return "merge/candidates";
     }
 
-    @PostMapping("/merge/union/create")
-    public String unionContainers(RedirectAttributes redirectAttributes, UnionForm unionForm) {
+    @PostMapping("/merge/union/create/{userToken}")
+    public String unionContainers(RedirectAttributes redirectAttributes,
+                                  @PathVariable("userToken") String userToken,
+                                  UnionForm unionForm) {
         // Check if at least one container was selected
         unionForm.getNewContainers().removeIf(Objects::isNull);
         if (unionForm.getNewContainers().isEmpty()) {
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Seleccione al menos un dataset", FlashMessage.Status.FAILURE));
-            return "redirect:/merge/union?containerId=" + unionForm.getOriginalContainer().getId();
+            return String.format("redirect:/merge/union/%s?containerId=%s", userToken, unionForm.getOriginalContainer().getId());
         }
         // Create new merged container
         DataContainer dataContainer = mergeService.performUnion(unionForm.getOriginalContainer(), unionForm.getNewContainers());
@@ -96,20 +102,22 @@ public class MergeController {
 
         redirectAttributes.addFlashAttribute("flash",
                 new FlashMessage("Unión creada exitosamente", FlashMessage.Status.SUCCESS));
-        return "redirect:/merge";
+        return "redirect:/merge/" + userToken;
     }
 
     /****** JOIN *******/
 
-    @GetMapping("/merge/join/new")
-    public String newJoin(Model model) {
+    @GetMapping("/merge/join/new/{userToken}")
+    public String newJoin(Model model, @PathVariable("userToken") String userToken) {
         model.addAttribute("containers", dataContainerRepository.findAllByDeletedIsFalse());
-        model.addAttribute("formUrl", contextPath + "/merge/join");
+        model.addAttribute("formUrl", contextPath + "/merge/join/" + userToken);
         return "merge/new_join";
     }
 
-    @GetMapping("/merge/join")
-    public String createJoinConditions(@RequestParam("containerId") String containerIds, Model model) {
+    @GetMapping("/merge/join/{userToken}")
+    public String createJoinConditions(@RequestParam("containerId") String containerIds,
+                                       @PathVariable("userToken") String userToken,
+                                       Model model) {
 //        List<JoinCandidate> joinCandidates = mergeService.findJoinCandidates(containerId);
         // Get all containers by ID
         String[] containerIdsArray = containerIds.split(",");
@@ -121,13 +129,14 @@ public class MergeController {
 
         model.addAttribute("containers", dataContainers);
         model.addAttribute("joinForm", new JoinForm());
-        model.addAttribute("formUrl", contextPath + "/merge/join/create");
+        model.addAttribute("formUrl", contextPath + "/merge/join/create/" + userToken);
         return "merge/join_conditions";
     }
 
-    @PostMapping("/merge/join/create")
+    @PostMapping("/merge/join/create/{userToken}")
     public String createJoin(RedirectAttributes redirectAttributes,
-                                  JoinForm joinForm) {
+                             @PathVariable("userToken") String userToken,
+                             JoinForm joinForm) {
         // Loop through all the join table pairs
         DataContainer joinResult = null;
         Set<String> containersIds = new HashSet<>();
@@ -155,6 +164,6 @@ public class MergeController {
 
         redirectAttributes.addFlashAttribute("flash",
                 new FlashMessage("Unión creada exitosamente", FlashMessage.Status.SUCCESS));
-        return "redirect:/merge";
+        return "redirect:/merge/" + userToken;
     }
 }

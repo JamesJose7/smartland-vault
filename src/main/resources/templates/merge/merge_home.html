@@ -47,7 +47,7 @@
                 <td class="text-right">
                     <a href="" class="btn btn-icon btn-table edit-color" data-toggle="tooltip" data-placement="left"
                        title="Editar"
-                       th:href="@{|/container/edit/${dataContainer.id}|}">
+                       th:href="@{|/container/edit/${dataContainer.id}/${userToken}|}">
                         <i class="material-icons">create</i>
                     </a>
                     <span data-toggle="tooltip" data-placement="left" title="Eliminar">
@@ -59,7 +59,7 @@
                     </span>
                     <a href="" class="btn btn-icon btn-table visualize-color" data-toggle="tooltip"
                        data-placement="left" title="Visualizar"
-                       th:href="@{|/container/${dataContainer.id}|}">
+                       th:href="@{|/container/${dataContainer.id}/${userToken}|}">
                         <i class="material-icons">search</i>
                     </a>
                 </td>
@@ -95,13 +95,14 @@
     /*<![CDATA[*/
 
     const contextPath = /*[[${contextPath}]]*/ '';
+    const userToken = /*[[${userToken}]]*/ '';
 
     /*]]>*/
 
     $(".btn-delete").click(function () {
         const selectedId = $(this).data("id");
         const selectedName = $(this).data("name");
-        $("#modal-delete-button").attr("href", `${contextPath}/container/${selectedId}/remove?redirect=merge`);
+        $("#modal-delete-button").attr("href", `${contextPath}/container/${selectedId}/remove/${userToken}?redirect=merge`);
         $("#dataset-name").text(selectedName);
     });
 </script>

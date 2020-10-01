@@ -98,9 +98,9 @@ public class ContainerController {
         model.addAttribute("dataContainerForm", new DataContainerForm());
         model.addAttribute("licenses", licenseTypeRepository.findAll());
         model.addAttribute("userToken", userToken);
-        // Get list of observatories
+        // Get list of observatories based on user
         try {
-            model.addAttribute("observatories", observatoriesService.getObservatories());
+            model.addAttribute("observatories", observatoriesService.getObservatoriesByUserToken(userToken));
         } catch (IOException e) {
             model.addAttribute("observatories", new ArrayList<Observatory>());
             logger.error("Could not retrieve observatories from API", e);
@@ -179,7 +179,7 @@ public class ContainerController {
         model.addAttribute("licenses", licenseTypeRepository.findAll());
         // Get list of observatories
         try {
-            model.addAttribute("observatories", observatoriesService.getObservatories());
+            model.addAttribute("observatories", observatoriesService.getObservatoriesByUserToken(userToken));
         } catch (IOException e) {
             model.addAttribute("observatories", new ArrayList<Observatory>());
             logger.error("Could not retrieve observatories from API", e);
@@ -492,9 +492,9 @@ public class ContainerController {
     private List<DataContainer> filterDataContainersByUser(String userToken) {
         List<DataContainer> dataContainers = new ArrayList<>();
         try {
-            List<UserObservatory> userObservatories = observatoriesService.getObservatoriesByUserToken(userToken);
-            userObservatories.forEach(userObservatory -> {
-                int obsId = userObservatory.getObservatorio().getId();
+            List<UserObservatory.ObservatoryDetails> userObservatories = observatoriesService.getObservatoriesByUserToken(userToken);
+            userObservatories.forEach(observatory -> {
+                int obsId = observatory.getId();
                 dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalseAndObservatoryEquals(obsId));
             });
         } catch (IOException e) {

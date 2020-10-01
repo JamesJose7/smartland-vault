@@ -426,6 +426,24 @@ public class ContainerController {
             return String.format("redirect:/%s/%s", redirect, userToken);
     }
 
+    @GetMapping("/container/publicToggle/{id}/{userToken}")
+    public String publicToggle(@PathVariable(name = "id") String containerId,
+                                     @PathVariable("userToken") String userToken,
+                                     RedirectAttributes redirectAttributes) {
+        // Get container
+        DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+        } else {
+            // Toggle public value and save it
+            dataContainer.setPublicContainer(!dataContainer.getPublicContainer());
+            dataContainerRepository.save(dataContainer);
+        }
+
+        return String.format("redirect:/container/%s/%s", containerId, userToken);
+    }
+
     @GetMapping("/container/edit/columns/{id}/{userToken}")
     public String editColumns(@PathVariable(name = "id") String containerId,
                               @PathVariable("userToken") String userToken,

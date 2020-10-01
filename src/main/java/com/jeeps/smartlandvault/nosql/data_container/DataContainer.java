@@ -2,18 +2,19 @@ package com.jeeps.smartlandvault.nosql.data_container;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jeeps.smartlandvault.nosql.metadata.Metadata;
+import com.jeeps.smartlandvault.util.RandomUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 @Document
 public class DataContainer {
     public static final String ORIGIN_EXCEL = "Excel";
     public static final String ORIGIN_REST_API = "Rest API";
+    public static final int ID_LENGTH = 20;
 
     @Id
     private String id;
@@ -297,7 +298,6 @@ public class DataContainer {
     }
 
     private String generateRandomId() {
-        Random random = new Random();
-        return "CONTAINER-" + random.nextInt(10000000);
+        return "R-" + RandomUtils.generateAlphanumericString(ID_LENGTH);
     }
 }

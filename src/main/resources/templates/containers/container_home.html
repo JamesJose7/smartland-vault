@@ -13,10 +13,11 @@
             <h1 th:text="${dataContainer.name}"></h1>
         </div>
         <div class="col-lg-2">
-            <p th:if="${dataContainer.active}" class="container-active text-lg-right">Público <i class="material-icons">check_circle</i>
+            <p th:if="${dataContainer.publicContainer}" class="container-active text-lg-right">Público <i
+                    class="material-icons">lock_open</i>
             </p>
-            <p th:unless="${dataContainer.active}" class="container-inactive text-lg-right">Privado <i
-                    class="material-icons">check_circle_outline</i></p>
+            <p th:unless="${dataContainer.publicContainer}" class="container-inactive text-lg-right">Privado <i
+                    class="material-icons">lock</i></p>
         </div>
     </div>
 

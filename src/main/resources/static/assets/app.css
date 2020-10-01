@@ -224,6 +224,10 @@ a.link {
 
 .container-active, .container-inactive {
     margin-top: 10px;
+    font-size: 1.1em;
+    height: 30px;
+    line-height: 30px;
+    white-space: nowrap;
 }
 
 .container-active i, .container-inactive i {

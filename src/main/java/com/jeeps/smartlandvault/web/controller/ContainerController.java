@@ -382,7 +382,10 @@ public class ContainerController {
                     new FlashMessage("Recurso borrado correctamente", FlashMessage.Status.SUCCESS));
         }
 
-        return String.format("redirect:/%s/%s", redirect, userToken);
+        if (redirect.isEmpty())
+            return String.format("redirect:/%s", userToken);
+        else
+            return String.format("redirect:/%s/%s", redirect, userToken);
     }
 
     /* Tools */
@@ -416,7 +419,10 @@ public class ContainerController {
                     new FlashMessage("Recurso duplicado correctamente", FlashMessage.Status.SUCCESS));
         }
 
-        return String.format("redirect:/%s/%s", redirect, userToken);
+        if (redirect.isEmpty())
+            return String.format("redirect:/%s", userToken);
+        else
+            return String.format("redirect:/%s/%s", redirect, userToken);
     }
 
     @GetMapping("/container/edit/columns/{id}/{userToken}")

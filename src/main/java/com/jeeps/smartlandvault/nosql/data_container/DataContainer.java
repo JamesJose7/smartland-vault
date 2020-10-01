@@ -25,7 +25,7 @@ public class DataContainer {
     private String fileUrl;
     private String publisher;
     private String sourceUrl;
-    private boolean isActive;
+    private boolean publicContainer;
     private int dataCount;
     private int propertyCount;
     private String originType;
@@ -55,12 +55,12 @@ public class DataContainer {
         this.originType = originType;
     }
 
-    public DataContainer(String id, String name, String publisher, String sourceUrl, boolean isActive, List<Object> data) {
+    public DataContainer(String id, String name, String publisher, String sourceUrl, boolean publicContainer, List<Object> data) {
         setId(id);
         this.name = name;
         this.publisher = publisher;
         this.sourceUrl = sourceUrl;
-        this.isActive = isActive;
+        this.publicContainer = publicContainer;
         setData(data);
     }
 
@@ -162,12 +162,16 @@ public class DataContainer {
         this.sourceUrl = sourceUrl;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public boolean getPublicContainer() {
+        return publicContainer;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public boolean isPublicContainer() {
+        return publicContainer;
+    }
+
+    public void setPublicContainer(boolean publicContainer) {
+        this.publicContainer = publicContainer;
     }
 
     public int getDataCount() {

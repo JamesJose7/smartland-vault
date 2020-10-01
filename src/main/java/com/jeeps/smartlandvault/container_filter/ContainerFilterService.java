@@ -33,6 +33,8 @@ public class ContainerFilterService {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+        // Add public containers
+        includePublicContainers(dataContainers);
         return dataContainers;
     }
 
@@ -47,6 +49,8 @@ public class ContainerFilterService {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+        // Add public containers
+        includePublicContainers(dataContainers);
         return dataContainers;
     }
 
@@ -61,6 +65,16 @@ public class ContainerFilterService {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+        // Add public containers
+        includePublicContainers(dataContainers);
         return dataContainers;
+    }
+
+    private void includePublicContainers(List<DataContainer> dataContainers) {
+        List<DataContainer> publicContainers = dataContainerRepository.findAllByDeletedIsFalseAndPublicContainerIsTrue();
+        publicContainers.forEach(container -> {
+            if (!dataContainers.contains(container))
+                dataContainers.add(container);
+        });
     }
 }

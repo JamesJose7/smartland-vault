@@ -8,7 +8,9 @@ import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
 import com.jeeps.smartlandvault.nosql.merged_container.MergedContainer;
 import com.jeeps.smartlandvault.nosql.merged_container.MergedContainerRepository;
+import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.web.FlashMessage;
+import com.jeeps.smartlandvault.container_filter.ContainerFilterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +42,16 @@ public class MergeController {
     @Autowired
     private DataContainerRepository dataContainerRepository;
 
+    @Autowired
+    private ObservatoriesService observatoriesService;
+    @Autowired
+    private ContainerFilterService containerFilterService;
+
 
     @GetMapping("/merge/{userToken}")
     public String mergeMenu(Model model, @PathVariable("userToken") String userToken) {
 
-        model.addAttribute("dataContainers", dataContainerRepository.findAllByDeletedIsFalseAndMergeIsTrue());
+        model.addAttribute("dataContainers", containerFilterService.filterMergedContainersByUser(userToken));
         model.addAttribute("newUnionLink", "/merge/union/new/" + userToken) ;
         model.addAttribute("newJoinLink", "/merge/join/new/" + userToken);
         model.addAttribute("userToken", userToken);
@@ -56,7 +63,7 @@ public class MergeController {
 
     @GetMapping("/merge/union/new/{userToken}")
     public String newUnion(Model model, @PathVariable("userToken") String userToken) {
-        model.addAttribute("containers", dataContainerRepository.findAllByDeletedIsFalse());
+        model.addAttribute("containers", containerFilterService.filterAllDataContainersByUser(userToken));
         model.addAttribute("formUrl", contextPath + "/merge/union/" + userToken);
         return "merge/new_union";
     }
@@ -65,7 +72,7 @@ public class MergeController {
     public String displayUnionCandidates(@RequestParam("containerId") String containerId,
                                          @PathVariable("userToken") String userToken,
                                          Model model) {
-        List<DataContainer> unionCandidates = mergeService.findUnionCandidates(containerId);
+        List<DataContainer> unionCandidates = mergeService.findUnionCandidates(containerId, userToken);
         DataContainer originalContainer = dataContainerRepository.findById(containerId).orElse(new DataContainer());
         UnionForm unionForm = new UnionForm(originalContainer, unionCandidates);
 
@@ -109,7 +116,7 @@ public class MergeController {
 
     @GetMapping("/merge/join/new/{userToken}")
     public String newJoin(Model model, @PathVariable("userToken") String userToken) {
-        model.addAttribute("containers", dataContainerRepository.findAllByDeletedIsFalse());
+        model.addAttribute("containers", containerFilterService.filterAllDataContainersByUser(userToken));
         model.addAttribute("formUrl", contextPath + "/merge/join/" + userToken);
         return "merge/new_join";
     }

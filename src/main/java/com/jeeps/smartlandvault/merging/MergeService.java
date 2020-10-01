@@ -1,11 +1,15 @@
 package com.jeeps.smartlandvault.merging;
 
+import com.jeeps.smartlandvault.container_filter.ContainerFilterService;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainer;
 import com.jeeps.smartlandvault.nosql.data_container.DataContainerRepository;
 import com.jeeps.smartlandvault.nosql.metadata.Metadata;
+import com.jeeps.smartlandvault.observatories.ObservatoriesService;
+import com.jeeps.smartlandvault.observatories.UserObservatory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -15,11 +19,16 @@ public class MergeService {
     @Autowired
     private DataContainerRepository dataContainerRepository;
 
-    public List<DataContainer> findUnionCandidates(String containerId) {
+    @Autowired
+    private ObservatoriesService observatoriesService;
+    @Autowired
+    private ContainerFilterService containerFilterService;
+
+    public List<DataContainer> findUnionCandidates(String containerId, String userToken) {
         Optional<DataContainer> containerOptional = dataContainerRepository.findById(containerId);
         if (!containerOptional.isPresent()) return null;
         DataContainer selectedContainer = containerOptional.get();
-        List<DataContainer> allContainers = dataContainerRepository.findAllByDeletedIsFalse();
+        List<DataContainer> allContainers = containerFilterService.filterAllDataContainersByUser(userToken);
 
         // Find containers with the same data structure
         if (selectedContainer.getMetadata() == null) return Collections.emptyList();
@@ -135,5 +144,17 @@ public class MergeService {
                     return newRowData;
                 })
                 .orElse(null);
+    }
+
+
+    private List<DataContainer> filterDataContainersByUser(String userToken) throws IOException {
+        List<DataContainer> dataContainers = new ArrayList<>();
+        List<UserObservatory.ObservatoryDetails> userObservatories = observatoriesService.getObservatoriesByUserToken(userToken);
+        userObservatories.forEach(observatory -> {
+            int obsId = observatory.getId();
+            dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndObservatoryEquals(obsId));
+        });
+
+        return dataContainers;
     }
 }

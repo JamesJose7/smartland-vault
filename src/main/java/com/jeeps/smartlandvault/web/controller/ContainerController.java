@@ -1,5 +1,6 @@
 package com.jeeps.smartlandvault.web.controller;
 
+import com.jeeps.smartlandvault.container_filter.ContainerFilterService;
 import com.jeeps.smartlandvault.container_tools.ColumnChangesForm;
 import com.jeeps.smartlandvault.exceptions.IncorrectExcelFormatException;
 import com.jeeps.smartlandvault.fileupload.ExcelTransformerService;
@@ -11,7 +12,6 @@ import com.jeeps.smartlandvault.nosql.license_type.LicenseTypeRepository;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
-import com.jeeps.smartlandvault.observatories.UserObservatory;
 import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
@@ -64,6 +64,8 @@ public class ContainerController {
 
     @Autowired
     private ObservatoriesService observatoriesService;
+    @Autowired
+    private ContainerFilterService containerFilterService;
 
     @Autowired
     private TableFileService tableFileService;
@@ -74,7 +76,7 @@ public class ContainerController {
     @GetMapping("/{userToken}")
     public String containersBrowser(Model model, @PathVariable("userToken") String userToken) {
         // Filter resources available for this user
-        List<DataContainer> dataContainers = filterDataContainersByUser(userToken);
+        List<DataContainer> dataContainers = containerFilterService.filterDataContainersByUser(userToken);
 
         model.addAttribute("dataContainers", dataContainers);
         model.addAttribute("addNewContainerLink", "/container/selectType/" + userToken);
@@ -487,19 +489,5 @@ public class ContainerController {
                 new FlashMessage("Columnas borradas correctamente", FlashMessage.Status.SUCCESS));
 
         return String.format("redirect:/container/%s/%s", containerId, userToken);
-    }
-
-    private List<DataContainer> filterDataContainersByUser(String userToken) {
-        List<DataContainer> dataContainers = new ArrayList<>();
-        try {
-            List<UserObservatory.ObservatoryDetails> userObservatories = observatoriesService.getObservatoriesByUserToken(userToken);
-            userObservatories.forEach(observatory -> {
-                int obsId = observatory.getId();
-                dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalseAndObservatoryEquals(obsId));
-            });
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-        }
-        return dataContainers;
     }
 }

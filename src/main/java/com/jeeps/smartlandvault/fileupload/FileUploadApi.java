@@ -35,7 +35,7 @@ public class FileUploadApi {
             @RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "observatory") String observatory,
+            @RequestParam(name = "observatory") int observatory,
             @RequestParam(name = "year") int year,
             @RequestParam(name = "publisher", required = false) String publisher,
             @RequestParam(name = "sourceUrl", required = false) String sourceUrl

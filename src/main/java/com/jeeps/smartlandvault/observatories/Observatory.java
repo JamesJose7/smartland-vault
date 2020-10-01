@@ -3,6 +3,7 @@ package com.jeeps.smartlandvault.observatories;
 import com.google.gson.annotations.SerializedName;
 
 public class Observatory {
+    private int id;
     @SerializedName("name_observatorio")
     private String nameObservatorio;
     @SerializedName("icon_observatorio")
@@ -17,6 +18,15 @@ public class Observatory {
     private String acronimo;
 
     private String titulo;
+
+    public int getId() {
+        getIdFromUrl(this.urlApi);
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getNameObservatorio() {
         return nameObservatorio;
@@ -39,6 +49,7 @@ public class Observatory {
     }
 
     public void setUrlApi(String urlApi) {
+        getIdFromUrl(urlApi);
         this.urlApi = urlApi;
     }
 
@@ -80,5 +91,11 @@ public class Observatory {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    private void getIdFromUrl(String url) {
+        String[] split = url.split("/");
+        int id = Integer.parseInt(split[split.length - 1]);
+        setId(id);
     }
 }

@@ -11,6 +11,7 @@ import com.jeeps.smartlandvault.nosql.license_type.LicenseTypeRepository;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
+import com.jeeps.smartlandvault.observatories.UserObservatory;
 import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
@@ -70,9 +71,12 @@ public class ContainerController {
     private final String EXPORT_EXCEL_URL = "/files/export/excel/%s";
     private final String EXPORT_CSV_URL = "/files/export/csv/%s";
 
-    @GetMapping("/")
-    public String containersBrowser(Model model) {
-        model.addAttribute("dataContainers", dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalse());
+    @GetMapping("/{userToken}")
+    public String containersBrowser(Model model, @PathVariable("userToken") String userToken) {
+        // Filter resources available for this user
+        List<DataContainer> dataContainers = filterDataContainersByUser(userToken);
+
+        model.addAttribute("dataContainers", dataContainers);
         model.addAttribute("addNewContainerLink", "/container/selectType");
         model.addAttribute("contextPath", contextPath);
         return "containers/containers_browser";
@@ -85,6 +89,7 @@ public class ContainerController {
         return "containers/select_container_type";
     }
 
+    // Upload excel container
     @GetMapping("/container/add/excel")
     public String addExcelContainer(Model model) {
         model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
@@ -100,6 +105,52 @@ public class ContainerController {
         return "containers/excel_upload_form";
     }
 
+    @PostMapping("container/add/excel/fileUpload")
+    public String uploadExcelTableWeb(
+            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) throws Exception {
+        String failureRedirect = "redirect:/container/add/excel";
+        String successRedirect = "redirect:/";
+
+        MultipartFile file = dataContainerForm.getFile();
+        DataContainer dataContainer = dataContainerForm.getDataContainer();
+        // Process keywords
+        dataContainer.setKeywords(KeywordsHelper.processKeywords(dataContainerForm.getKeywordsRaw()));
+
+        // Check MIME type to match the accepted ones
+        if (file.getContentType() == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("No se pudo determinar el tipo de archivo, por favor intente de nuevo", FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
+        if (!ExcelSheetReader.isExcelMimeType(file.getContentType())) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Only Excel spreadsheets are supported, please try again", FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
+        // Hand input stream to excel service
+        try {
+            // Upload file to mongodb
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String fileId = tableFileService.addTableFile(dataContainer.getName(), fileExtension, file);
+            String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
+            // Additional data
+            dataContainer.setFileUrl(fileUrl);
+            dataContainer.setFileType(fileExtension);
+            dataContainer.setDateCreated(new Date());
+            // Transform excel
+            excelTransformerService.transform(file.getInputStream(), dataContainer, fileExtension);
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("Recurso agregado correctamente", FlashMessage.Status.SUCCESS));
+            return successRedirect;
+        } catch (IncorrectExcelFormatException | IOException e) {
+            logger.error(e.getMessage());
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage(e.getMessage(), FlashMessage.Status.FAILURE));
+            return failureRedirect;
+        }
+    }
+
+    // Edit excel container
     @GetMapping("/container/edit/{id}")
     public String editContainer(@PathVariable("id") String id,
                                 RedirectAttributes redirectAttributes,
@@ -148,52 +199,7 @@ public class ContainerController {
         return "redirect:/";
     }
 
-    // Web Forms
-    @PostMapping("container/add/excel/fileUpload")
-    public String uploadExcelTableWeb(
-            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) throws Exception {
-        String failureRedirect = "redirect:/container/add/excel";
-        String successRedirect = "redirect:/";
-
-        MultipartFile file = dataContainerForm.getFile();
-        DataContainer dataContainer = dataContainerForm.getDataContainer();
-        // Process keywords
-        dataContainer.setKeywords(KeywordsHelper.processKeywords(dataContainerForm.getKeywordsRaw()));
-
-        // Check MIME type to match the accepted ones
-        if (file.getContentType() == null) {
-            redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage("No se pudo determinar el tipo de archivo, por favor intente de nuevo", FlashMessage.Status.FAILURE));
-            return failureRedirect;
-        }
-        if (!ExcelSheetReader.isExcelMimeType(file.getContentType())) {
-            redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage("Only Excel spreadsheets are supported, please try again", FlashMessage.Status.FAILURE));
-            return failureRedirect;
-        }
-        // Hand input stream to excel service
-        try {
-            // Upload file to mongodb
-            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-            String fileId = tableFileService.addTableFile(dataContainer.getName(), fileExtension, file);
-            String fileUrl = String.format("%s/files/download/%s", contextPath, fileId);
-            // Additional data
-            dataContainer.setFileUrl(fileUrl);
-            dataContainer.setFileType(fileExtension);
-            dataContainer.setDateCreated(new Date());
-            // Transform excel
-            excelTransformerService.transform(file.getInputStream(), dataContainer, fileExtension);
-            redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage("Recurso agregado correctamente", FlashMessage.Status.SUCCESS));
-            return successRedirect;
-        } catch (IncorrectExcelFormatException | IOException e) {
-            logger.error(e.getMessage());
-            redirectAttributes.addFlashAttribute("flash",
-                    new FlashMessage(e.getMessage(), FlashMessage.Status.FAILURE));
-            return failureRedirect;
-        }
-    }
-
+    // Upload rest container
     @GetMapping("/container/add/rest")
     public String addRestContainer(Model model) {
         model.addAttribute("uploadRestUrl", String.format("%s/container/add/rest/upload", contextPath));
@@ -224,6 +230,7 @@ public class ContainerController {
         return successRedirect;
     }
 
+    // View container details
     @GetMapping("/container/{id}")
     public String viewContainer(@PathVariable("id") String id,
                                 Model model) {
@@ -234,14 +241,12 @@ public class ContainerController {
         DataContainer dataContainer = dataContainerOptional.get();
         // Show inventory when it has one
         ContainerInventory containerInventory = containerInventoryRepository.findByContainerId(dataContainer.getId()).orElse(null);
-        // Get observatory data if present
-        if (dataContainer.getObservatory() != null) {
-            try {
-                Observatory observatory = observatoriesService.getObservatory(dataContainer.getObservatory());
-                model.addAttribute("observatoryData", observatory);
-            } catch (IOException e) {
-                logger.error("Error retrieving observatory's details", e);
-            }
+        // Get observatory data
+        try {
+            Observatory observatory = observatoriesService.getObservatory(dataContainer.getObservatory());
+            model.addAttribute("observatoryData", observatory);
+        } catch (IOException e) {
+            logger.error("Error retrieving observatory's details", e);
         }
 
         // Get license name
@@ -338,6 +343,7 @@ public class ContainerController {
         return String.format("redirect:/container/%s/browseData", containerId);
     }
 
+    // Remove container
     @GetMapping("/container/{id}/remove")
     public String logicalDelete(@PathVariable(name = "id") String containerId,
                                 @RequestParam(name = "redirect", required = false, defaultValue = "") String redirect,
@@ -460,5 +466,19 @@ public class ContainerController {
                 new FlashMessage("Columnas borradas correctamente", FlashMessage.Status.SUCCESS));
 
         return "redirect:/container/" + containerId;
+    }
+
+    private List<DataContainer> filterDataContainersByUser(String userToken) {
+        List<DataContainer> dataContainers = new ArrayList<>();
+        try {
+            List<UserObservatory> userObservatories = observatoriesService.getObservatoriesByUserToken(userToken);
+            userObservatories.forEach(userObservatory -> {
+                int obsId = userObservatory.getObservatorio().getId();
+                dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalseAndObservatoryEquals(obsId));
+            });
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        return dataContainers;
     }
 }

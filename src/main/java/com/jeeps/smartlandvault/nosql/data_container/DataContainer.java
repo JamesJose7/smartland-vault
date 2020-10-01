@@ -19,7 +19,8 @@ public class DataContainer {
     @Id
     private String id;
     private String name;
-    private String observatory;
+    private int observatory;
+    private String userToken;
     private int year;
     private String fileUrl;
     private String publisher;
@@ -63,7 +64,7 @@ public class DataContainer {
         setData(data);
     }
 
-    public DataContainer(String id, String name, String observatory, int year, String fileUrl, String originType, String publisher, String sourceUrl) {
+    public DataContainer(String id, String name, int observatory, int year, String fileUrl, String originType, String publisher, String sourceUrl) {
         setId(id);
         this.name = name;
         this.observatory = observatory;
@@ -113,12 +114,20 @@ public class DataContainer {
         this.name = name;
     }
 
-    public String getObservatory() {
+    public int getObservatory() {
         return observatory;
     }
 
-    public void setObservatory(String observatory) {
+    public void setObservatory(int observatory) {
         this.observatory = observatory;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 
     public int getYear() {

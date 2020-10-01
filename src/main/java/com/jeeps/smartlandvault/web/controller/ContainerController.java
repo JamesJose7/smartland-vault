@@ -77,24 +77,27 @@ public class ContainerController {
         List<DataContainer> dataContainers = filterDataContainersByUser(userToken);
 
         model.addAttribute("dataContainers", dataContainers);
-        model.addAttribute("addNewContainerLink", "/container/selectType");
+        model.addAttribute("addNewContainerLink", "/container/selectType/" + userToken);
         model.addAttribute("contextPath", contextPath);
+        model.addAttribute("userToken", userToken);
         return "containers/containers_browser";
     }
 
-    @GetMapping("/container/selectType")
-    public String selectContainerType(Model model) {
-        model.addAttribute("excelTypeUrl", "/container/add/excel");
-        model.addAttribute("restTypeUrl", "/container/add/rest");
+    @GetMapping("/container/selectType/{userToken}")
+    public String selectContainerType(Model model, @PathVariable("userToken") String userToken) {
+        model.addAttribute("excelTypeUrl", "/container/add/excel/" + userToken);
+        model.addAttribute("restTypeUrl", "/container/add/rest/" + userToken);
         return "containers/select_container_type";
     }
 
     // Upload excel container
-    @GetMapping("/container/add/excel")
-    public String addExcelContainer(Model model) {
-        model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload", contextPath));
+    @GetMapping("/container/add/excel/{userToken}")
+    public String addExcelContainer(Model model, @PathVariable("userToken") String userToken) {
+        model.addAttribute("uploadExcelUrl", String.format("%s/container/add/excel/fileUpload/%s",
+                contextPath, userToken));
         model.addAttribute("dataContainerForm", new DataContainerForm());
         model.addAttribute("licenses", licenseTypeRepository.findAll());
+        model.addAttribute("userToken", userToken);
         // Get list of observatories
         try {
             model.addAttribute("observatories", observatoriesService.getObservatories());
@@ -105,11 +108,12 @@ public class ContainerController {
         return "containers/excel_upload_form";
     }
 
-    @PostMapping("container/add/excel/fileUpload")
+    @PostMapping("container/add/excel/fileUpload/{userToken}")
     public String uploadExcelTableWeb(
-            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) throws Exception {
-        String failureRedirect = "redirect:/container/add/excel";
-        String successRedirect = "redirect:/";
+            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes,
+            @PathVariable("userToken") String userToken) throws Exception {
+        String failureRedirect = "redirect:/container/add/excel/" + userToken;
+        String successRedirect = "redirect:/" + userToken;
 
         MultipartFile file = dataContainerForm.getFile();
         DataContainer dataContainer = dataContainerForm.getDataContainer();
@@ -151,15 +155,16 @@ public class ContainerController {
     }
 
     // Edit excel container
-    @GetMapping("/container/edit/{id}")
+    @GetMapping("/container/edit/{id}/{userToken}")
     public String editContainer(@PathVariable("id") String id,
+                                @PathVariable("userToken") String userToken,
                                 RedirectAttributes redirectAttributes,
                                 Model model) {
         DataContainer dataContainer = dataContainerRepository.findById(id).orElse(null);
         if (dataContainer == null) {
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
-            return "redirect:/";
+            return "redirect:/" + userToken;
         }
 
         DataContainerForm dataContainerForm = new DataContainerForm();
@@ -167,8 +172,10 @@ public class ContainerController {
         dataContainerForm.setKeywordsRaw(KeywordsHelper.unprocessKeywords(dataContainer.getKeywords()));
         dataContainerForm.setDataContainer(dataContainer);
 
+        model.addAttribute("userToken", userToken);
         model.addAttribute("dataContainerForm", dataContainerForm);
-        model.addAttribute("uploadExcelUrl", String.format("%s/container/edit/excel", contextPath));
+        model.addAttribute("uploadExcelUrl", String.format("%s/container/edit/excel/%s",
+                contextPath, userToken));
         model.addAttribute("licenses", licenseTypeRepository.findAll());
         // Get list of observatories
         try {
@@ -180,9 +187,10 @@ public class ContainerController {
         return "containers/excel_edit_form";
     }
 
-    @PostMapping("/container/edit/excel")
+    @PostMapping("/container/edit/excel/{userToken}")
     public String updateContainer(
-            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes) {
+            DataContainerForm dataContainerForm, RedirectAttributes redirectAttributes,
+            @PathVariable("userToken") String userToken) {
         // New container data received from form
         DataContainer newDataContainer = dataContainerForm.getDataContainer();
         // Get previous data and transfer the form data
@@ -196,26 +204,28 @@ public class ContainerController {
 
         redirectAttributes.addFlashAttribute("flash",
                 new FlashMessage("Recurso actualizado correctamente", FlashMessage.Status.SUCCESS));
-        return "redirect:/";
+        return "redirect:/" + userToken;
     }
 
     // Upload rest container
-    @GetMapping("/container/add/rest")
-    public String addRestContainer(Model model) {
-        model.addAttribute("uploadRestUrl", String.format("%s/container/add/rest/upload", contextPath));
+    @GetMapping("/container/add/rest/{userToken}")
+    public String addRestContainer(Model model, @PathVariable("userToken") String userToken) {
+        model.addAttribute("uploadRestUrl", String.format("%s/container/add/rest/upload/%s",
+                contextPath, userToken));
         return "containers/rest_upload_form";
     }
 
-    @PostMapping("container/add/rest/upload")
+    @PostMapping("container/add/rest/upload/{userToken}")
     public String uploadRestEndpointWeb(
             @RequestParam(name = "restUrl") String restUrl,
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "publisher", required = false) String publisher,
             @RequestParam(name = "sourceUrl", required = false) String sourceUrl,
+            @PathVariable("userToken") String userToken,
             RedirectAttributes redirectAttributes) {
-        String failureRedirect = "redirect:/container/add/rest";
-        String successRedirect = "redirect:/";
+        String failureRedirect = "redirect:/container/add/rest/" + userToken;
+        String successRedirect = "redirect:/" + userToken;
 
         if (!UrlUtils.isValidUrl(restUrl)) {
             redirectAttributes.addFlashAttribute("flash",
@@ -231,8 +241,9 @@ public class ContainerController {
     }
 
     // View container details
-    @GetMapping("/container/{id}")
+    @GetMapping("/container/{id}/{userToken}")
     public String viewContainer(@PathVariable("id") String id,
+                                @PathVariable("userToken") String userToken,
                                 Model model) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
         if (!dataContainerOptional.isPresent())
@@ -257,22 +268,25 @@ public class ContainerController {
         String fileRelativeUrl = dataContainer.getFileUrl().replace(contextPath, "");
         model.addAttribute("fileDownloadUrl", fileRelativeUrl);
 
+        model.addAttribute("userToken", userToken);
         model.addAttribute("exportExcelUrl", String.format(EXPORT_EXCEL_URL, dataContainer.getId()));
         model.addAttribute("exportCsvUrl", String.format(EXPORT_CSV_URL, dataContainer.getId()));
         model.addAttribute("dataContainer", dataContainer);
         model.addAttribute("inventory", containerInventory);
-        model.addAttribute("browseDataLink", String.format("/container/%s/browseData", dataContainer.getId()));
+        model.addAttribute("browseDataLink", String.format("/container/%s/browseData/%s",
+                dataContainer.getId(), userToken));
         model.addAttribute("rawDataLink", String.format("/api/v1/dataContainers/%s/data", dataContainer.getId()));
         model.addAttribute("dataTablesEndPoint", String.format("%s/api/v1/dataContainers/%s/data", contextPath, dataContainer.getId()));
         return "containers/container_home";
     }
 
 
-    @GetMapping("/container/{id}/browseData")
+    @GetMapping("/container/{id}/browseData/{userToken}")
     public String viewContainerData(@PathVariable("id") String id,
-                                @RequestParam(name = "tree", defaultValue = "/", required = false) String currentTree,
-                                @RequestParam(name = "navigating", defaultValue = "false", required = false) String isNavigating,
-                                Model model) {
+                        @PathVariable("userToken") String userToken,
+                        @RequestParam(name = "tree", defaultValue = "/", required = false) String currentTree,
+                        @RequestParam(name = "navigating", defaultValue = "false", required = false) String isNavigating,
+                        Model model) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(id);
         if (!dataContainerOptional.isPresent())
             throw new ResourceNotFoundException();
@@ -309,14 +323,17 @@ public class ContainerController {
         model.addAttribute("currentTree", currentTree);
         model.addAttribute("isMainDataSelected", isMainDataSelected);
         model.addAttribute("dataProperties", properties);
-        model.addAttribute("containerUrl", String.format("/container/%s/browseData", dataContainer.getId()));
-        model.addAttribute("selectMainDataUrl", String.format("%s/container/%s/main-data", contextPath, dataContainer.getId()));
+        model.addAttribute("containerUrl", String.format("/container/%s/browseData/%s",
+                dataContainer.getId(), userToken));
+        model.addAttribute("selectMainDataUrl", String.format("%s/container/%s/main-data/%s",
+                contextPath, dataContainer.getId(), userToken));
         return "containers/container_data_browser";
     }
 
-    @PostMapping(value = "/container/{id}/main-data")
+    @PostMapping(value = "/container/{id}/main-data/{userToken}")
     public String selectMainDataTree(RedirectAttributes redirectAttributes,
                                      @PathVariable(name = "id") String containerId,
+                                     @PathVariable("userToken") String userToken,
                                      @RequestParam(name = "tree") String selectedTree) {
         Optional<DataContainer> dataContainerOptional = dataContainerRepository.findById(containerId);
         if (!dataContainerOptional.isPresent())
@@ -340,12 +357,13 @@ public class ContainerController {
         dataContainer.setMetadata(InventoryHelper.getMetadataFromInventory(containerInventory));
         dataContainerRepository.save(dataContainer);
         logger.info(String.format("Request :%s | from id: %s", selectedTree, containerId));
-        return String.format("redirect:/container/%s/browseData", containerId);
+        return String.format("redirect:/container/%s/browseData/%s", containerId, userToken);
     }
 
     // Remove container
-    @GetMapping("/container/{id}/remove")
+    @GetMapping("/container/{id}/remove/{userToken}")
     public String logicalDelete(@PathVariable(name = "id") String containerId,
+                                @PathVariable("userToken") String userToken,
                                 @RequestParam(name = "redirect", required = false, defaultValue = "") String redirect,
                                 RedirectAttributes redirectAttributes) {
         // Get container
@@ -362,12 +380,13 @@ public class ContainerController {
                     new FlashMessage("Recurso borrado correctamente", FlashMessage.Status.SUCCESS));
         }
 
-        return "redirect:/" + redirect;
+        return String.format("redirect:/%s/%s", redirect, userToken);
     }
 
     /* Tools */
-    @GetMapping("/container/duplicate/{id}")
+    @GetMapping("/container/duplicate/{id}/{userToken}")
     public String duplicateContainer(@PathVariable(name = "id") String containerId,
+                                     @PathVariable("userToken") String userToken,
                                      @RequestParam(name = "redirect", required = false, defaultValue = "") String redirect,
                                      RedirectAttributes redirectAttributes) {
         // Get container
@@ -395,11 +414,12 @@ public class ContainerController {
                     new FlashMessage("Recurso duplicado correctamente", FlashMessage.Status.SUCCESS));
         }
 
-        return "redirect:/" + redirect;
+        return String.format("redirect:/%s/%s", redirect, userToken);
     }
 
-    @GetMapping("/container/edit/columns/{id}")
+    @GetMapping("/container/edit/columns/{id}/{userToken}")
     public String editColumns(@PathVariable(name = "id") String containerId,
+                              @PathVariable("userToken") String userToken,
                               Model model,
                               RedirectAttributes redirectAttributes) {
         // Get container
@@ -407,18 +427,19 @@ public class ContainerController {
         if (dataContainer == null) {
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
-            return "redirect:/";
+            return "redirect:/" + userToken;
         }
 
-        model.addAttribute("formUrl", contextPath + "/container/edit/columns/save");
+        model.addAttribute("formUrl", contextPath + "/container/edit/columns/save/" + userToken);
         model.addAttribute("columnChangesForm", new ColumnChangesForm());
         model.addAttribute("dataContainer", dataContainer);
 
         return "containers/container_column_editor";
     }
 
-    @PostMapping("/container/edit/columns/save")
-    public String saveColumnsChanges(ColumnChangesForm columnChangesForm,
+    @PostMapping("/container/edit/columns/save/{userToken}")
+    public String saveColumnsChanges(@PathVariable("userToken") String userToken,
+                                     ColumnChangesForm columnChangesForm,
                                      RedirectAttributes redirectAttributes) {
         String containerId = columnChangesForm.getContainerId();
         // Check if at least one column was selected
@@ -427,14 +448,14 @@ public class ContainerController {
         if (selectedColumns.isEmpty()) {
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("Por favor seleccionar al menos una columna", FlashMessage.Status.FAILURE));
-            return "redirect:/container/edit/columns/" + containerId;
+            return String.format("redirect:/container/edit/columns/%s/%s", containerId, userToken);
         }
         // Get container
         DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
         if (dataContainer == null) {
             redirectAttributes.addFlashAttribute("flash",
                     new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
-            return "redirect:/";
+            return "redirect:/" + userToken;
         }
 
         // Delete columns from metadata
@@ -465,7 +486,7 @@ public class ContainerController {
         redirectAttributes.addFlashAttribute("flash",
                 new FlashMessage("Columnas borradas correctamente", FlashMessage.Status.SUCCESS));
 
-        return "redirect:/container/" + containerId;
+        return String.format("redirect:/container/%s/%s", containerId, userToken);
     }
 
     private List<DataContainer> filterDataContainersByUser(String userToken) {

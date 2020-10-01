@@ -29,9 +29,9 @@
                 </a>
 
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" th:href="@{|/container/edit/${dataContainer.id}|}">Editar</a>
-                    <a class="dropdown-item" th:href="@{|/container/duplicate/${dataContainer.id}|}">Duplicar</a>
-                    <a class="dropdown-item" th:href="@{|/container/edit/columns/${dataContainer.id}|}"
+                    <a class="dropdown-item" th:href="@{|/container/edit/${dataContainer.id}/${userToken}|}">Editar</a>
+                    <a class="dropdown-item" th:href="@{|/container/duplicate/${dataContainer.id}/${userToken}|}">Duplicar</a>
+                    <a class="dropdown-item" th:href="@{|/container/edit/columns/${dataContainer.id}/${userToken}|}"
                     th:if="${dataContainer.isDuplicate() || dataContainer.isMerge()}" >Eliminar columnas</a>
                 </div>
             </div>
@@ -64,7 +64,7 @@
         </div>
         <div class="col-md-8">
             <p th:if="${dataContainer.observatory != null}" class="info-item">Observatorio<span><a
-                    th:href="${dataContainer.observatory}" th:text="${observatoryData.titulo}" class="link"
+                    th:href="${observatoryData.urlObservatorio}" th:text="${observatoryData.titulo}" class="link"
                     target="_blank"></a></span></p>
             <p th:if="${dataContainer.observatory != null}" class="info-item">Año<span
                     th:text="${dataContainer.year}"></span></p>

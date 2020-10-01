@@ -52,7 +52,7 @@
                         <label for="observatory">Seleccionar observatorio</label>
                         <select class="form-control" id="observatory" name="observatory"
                                 th:field="*{dataContainer.observatory}" required aria-describedby="observatoryHelp">
-                            <option th:each="observatory : ${observatories}" th:value="${observatory.urlApi}"
+                            <option th:each="observatory : ${observatories}" th:value="${observatory.getId()}"
                                     th:text="${observatory.nameObservatorio}"></option>
                         </select>
                         <small id="observatoryHelp" class="form-text text-muted">(Obligatorio)</small>

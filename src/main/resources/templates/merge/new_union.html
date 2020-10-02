@@ -9,7 +9,8 @@
     <div th:replace="layout :: flash"></div>
 
     <div class="row mt-3 mb-2">
-        <div class="col-12">
+        <div class="col-12 link-header">
+            <div th:replace="layout :: back-button('/merge/' + ${userToken})"></div>
             <h1>Nueva unión</h1>
         </div>
     </div>

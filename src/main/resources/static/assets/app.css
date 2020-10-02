@@ -148,6 +148,15 @@ a.link {
     background-color: #26A69A !important;
 }
 
+.link-header h1 {
+    display: inline-block;
+}
+
+.link-header span {
+    font-size: 30px;
+    color: #000;
+}
+
 /* Containers browser page */
 .add-container-btn i {
     font-size: 15px;

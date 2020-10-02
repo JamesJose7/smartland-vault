@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
 
@@ -162,6 +163,7 @@ public class ContainerController {
     public String editContainer(@PathVariable("id") String id,
                                 @PathVariable("userToken") String userToken,
                                 RedirectAttributes redirectAttributes,
+                                HttpServletRequest request,
                                 Model model) {
         DataContainer dataContainer = dataContainerRepository.findById(id).orElse(null);
         if (dataContainer == null) {
@@ -176,6 +178,7 @@ public class ContainerController {
         dataContainerForm.setDataContainer(dataContainer);
 
         model.addAttribute("userToken", userToken);
+        model.addAttribute("backUrl", request.getHeader("Referer"));
         model.addAttribute("dataContainerForm", dataContainerForm);
         model.addAttribute("uploadExcelUrl", String.format("%s/container/edit/excel/%s",
                 contextPath, userToken));

@@ -9,8 +9,9 @@
     <div th:replace="layout :: flash"></div>
 
     <div class="row mt-3">
-        <div class="col-12">
-            <h1>Nuevo dataset</h1>
+        <div class="col-12 link-header">
+            <div th:replace="layout :: back-button(${backUrl})"></div>
+            <h1>Editar recurso</h1>
         </div>
     </div>
 
@@ -53,7 +54,7 @@
                         <select class="form-control" id="observatory" name="observatory"
                                 th:field="*{dataContainer.observatory}" required aria-describedby="observatoryHelp">
                             <option th:each="observatory : ${observatories}" th:value="${observatory.getId()}"
-                                    th:text="${observatory.nameObservatorio}"></option>
+                                    th:text="${observatory.nombre}"></option>
                         </select>
                         <small id="observatoryHelp" class="form-text text-muted">(Obligatorio)</small>
                     </div>

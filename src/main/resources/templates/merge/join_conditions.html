@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head('Nuevo join')"></head>
+<head th:replace="layout :: head('Nueva combinación')"></head>
 <body>
 
 <div th:replace="layout :: nav"></div>
@@ -9,8 +9,9 @@
     <div th:replace="layout :: flash"></div>
 
     <div class="row mt-3">
-        <div class="col-12">
-            <h1>Nuevo join</h1>
+        <div class="col-12 link-header">
+            <div th:replace="layout :: back-button('/merge/' + ${userToken})"></div>
+            <h1>Nueva combinación</h1>
         </div>
     </div>
 

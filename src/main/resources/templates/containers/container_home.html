@@ -8,7 +8,7 @@
 
     <div th:replace="layout :: flash"></div>
 
-    <div class="row mt-3 pb-2">
+    <div class="row mt-3 mb-3 pb-2">
         <div class="col-lg-10">
             <h1 th:text="${dataContainer.name}"></h1>
         </div>
@@ -171,6 +171,29 @@
         </table>
     </div>
 
+    <h2 class="section-border">Visualización</h2>
+    <div class="mb-5" id="graphs">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="dimension">Dimensión</label>
+                <select name="dimension" id="dimension" class="form-control">
+                    <option th:value="${metadata.propertyName}" th:text="${metadata.propertyName}"
+                            th:each="metadata : ${dataContainer.metadata}"></option>
+                </select>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="metric">Métrica</label>
+                <select name="metric" id="metric" class="form-control">
+                    <option value="sum">Sumatoria</option>
+                    <option th:value="${metadata.propertyName}" th:text="${metadata.propertyName}"
+                            th:each="metadata : ${dataContainer.metadata}"></option>
+                </select>
+            </div>
+        </div>
+        <button id="update-chart" class="btn btn-primary">Actualizar</button>
+        <canvas id="myChart"></canvas>
+    </div>
+
 </div>
 
 <div th:replace="layout :: scripts"></div>
@@ -182,13 +205,35 @@
 <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.html5.min.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.4/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
 <script type="text/javascript" th:inline="javascript">
     /*<![CDATA[*/
 
     const dataTablesEndPoint = /*[[${dataTablesEndPoint}]]*/ '';
     const columnsData = /*[[${dataContainer.metadata}]]*/ [];
+    const data = /*[[${dataContainer.data}]]*/ [];
 
     /*]]>*/
+
+    const countValuesRepetitions = (data, val) => {
+        let counts = {}
+        data.forEach(function (x) {
+            counts[x[val]] = (counts[x[val]] || 0) + 1;
+        })
+        return counts
+    }
+
+    const transformToChartData = (repetitions) => {
+        let result = {
+            labels: [],
+            data: []
+        }
+        Object.entries(repetitions).forEach(([key, value]) => {
+            result.labels.push(key);
+            result.data.push(value);
+        });
+        return result;
+    }
 
     $(document).ready(function () {
         // Get column names from metadata
@@ -209,6 +254,67 @@
                 'csv', 'excel', 'pdf', 'print'
             ]
         })
+
+        // Charts
+        let currentDimension = columnNames[0].data;
+        let currentMetric = 'sum';
+
+        // Initial values
+        const repetitions = countValuesRepetitions(data, currentDimension);
+        const {labels, data: sumValues} = transformToChartData(repetitions);
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let chart = new Chart(ctx, {
+            type: 'bar',
+
+            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: currentDimension,
+                    backgroundColor: 'rgba(255, 99, 132, .8)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: sumValues
+                }]
+            },
+            options: {}
+        });
+
+        $('#update-chart').click(function () {
+            updateChart();
+        });
+
+        // Charts controls
+        $("#graphs").on('change', '#dimension', function () {
+            // Update dimension
+            currentDimension = this.value;
+        });
+
+        $("#graphs").on('change', '#metric', function () {
+            // Update metric
+            currentMetric = this.value;
+        });
+
+        const updateChart = () => {
+            let aData;
+            let aLabels;
+            if (currentMetric === 'sum') {
+                // Sum repetitions of the column values
+                const repetitions = countValuesRepetitions(data, currentDimension);
+                const {labels: newLabels, data: newData} = transformToChartData(repetitions);
+                aLabels = newLabels;
+                aData = newData;
+            } else {
+                // Get dimension values
+                aLabels = data.map(column => column[currentDimension]);
+                aData = data.map(column => column[currentMetric]);
+            }
+            // Update chart
+            chart.data.datasets[0].data = aData;
+            chart.data.datasets[0].label = currentDimension;
+            chart.data.labels = aLabels;
+            chart.update();
+        }
     });
 </script>
 </body>

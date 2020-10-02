@@ -173,6 +173,14 @@
 
     <h2 class="section-border">Visualización</h2>
     <div class="mb-5" id="graphs">
+        <div class="form-group">
+            <label for="graph-type">Tipo de gráfica</label>
+            <select name="graph-type" id="graph-type" class="form-control">
+                <option value="barChart">Barras</option>
+                <option value="lineChart">Líneas</option>
+                <option value="pieChart">Pastel</option>
+            </select>
+        </div>
         <div class="row">
             <div class="col-md-6 form-group">
                 <label for="dimension">Dimensión</label>
@@ -191,7 +199,9 @@
             </div>
         </div>
         <button id="update-chart" class="btn btn-primary">Actualizar</button>
-        <canvas id="myChart"></canvas>
+        <canvas id="barChart"></canvas>
+        <canvas id="lineChart" class=""></canvas>
+        <canvas id="pieChart" class=""></canvas>
     </div>
 
 </div>
@@ -256,18 +266,54 @@
         })
 
         // Charts
+        let currentGraphElement = 'barChart';
         let currentDimension = columnNames[0].data;
         let currentMetric = 'sum';
+        let currentChart;
+
+        hideCharts();
+        showChart(currentGraphElement)
 
         // Initial values
         const repetitions = countValuesRepetitions(data, currentDimension);
         const {labels, data: sumValues} = transformToChartData(repetitions);
 
-        let ctx = document.getElementById('myChart').getContext('2d');
-        let chart = new Chart(ctx, {
+        // Bar Chart
+        let barChartCtx = document.getElementById('barChart').getContext('2d');
+        let barChart = new Chart(barChartCtx, {
             type: 'bar',
-
-            // The data for our dataset
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: currentDimension,
+                    backgroundColor: 'rgba(255, 99, 132, .8)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: sumValues
+                }]
+            },
+            options: {}
+        });
+        // default chart
+        currentChart = barChart;
+        // Line Chart
+        let lineChartCtx = document.getElementById('lineChart').getContext('2d');
+        let lineChart = new Chart(lineChartCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: currentDimension,
+                    backgroundColor: 'rgba(255, 99, 132, .8)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    data: sumValues
+                }]
+            },
+            options: {}
+        });
+        // Pie Chart
+        let pieChartCtx = document.getElementById('pieChart').getContext('2d');
+        let pieChart = new Chart(pieChartCtx, {
+            type: 'pie',
             data: {
                 labels: labels,
                 datasets: [{
@@ -285,14 +331,29 @@
         });
 
         // Charts controls
-        $("#graphs").on('change', '#dimension', function () {
+        const $graphsContainer = $("#graphs");
+        $graphsContainer.on('change', '#dimension', function () {
             // Update dimension
             currentDimension = this.value;
         });
-
-        $("#graphs").on('change', '#metric', function () {
+        $graphsContainer.on('change', '#metric', function () {
             // Update metric
             currentMetric = this.value;
+        });
+        $graphsContainer.on('change', '#graph-type', function () {
+            // Update graph type
+            currentGraphElement = this.value;
+            switch (this.value) {
+                case 'barChart':
+                    currentChart = barChart;
+                    break;
+                case 'lineChart':
+                    currentChart = lineChart;
+                    break;
+                case 'pieChart':
+                    currentChart = pieChart;
+                    break;
+            }
         });
 
         const updateChart = () => {
@@ -309,13 +370,27 @@
                 aLabels = data.map(column => column[currentDimension]);
                 aData = data.map(column => column[currentMetric]);
             }
+            // Change chart
+            hideCharts();
+            showChart(currentGraphElement)
             // Update chart
-            chart.data.datasets[0].data = aData;
-            chart.data.datasets[0].label = currentDimension;
-            chart.data.labels = aLabels;
-            chart.update();
+            currentChart.data.datasets[0].data = aData;
+            currentChart.data.datasets[0].label = currentDimension;
+            currentChart.data.labels = aLabels;
+            currentChart.update();
         }
     });
+
+    const hideCharts = () => {
+        $("#lineChart").hide();
+        $("#barChart").hide();
+        $("#pieChart").hide();
+    }
+
+    const showChart = (chart) => {
+        console.log(`#${chart}`)
+        $(`#${chart}`).show();
+    }
 </script>
 </body>
 </html>

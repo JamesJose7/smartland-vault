@@ -198,10 +198,23 @@
                 </select>
             </div>
         </div>
-        <button id="update-chart" class="btn btn-primary">Actualizar</button>
+        <div class="row mb-2">
+            <div class="col-md-6 form-group">
+                <label class="text-white">Actualizar</label>
+                <button id="update-chart" class="btn btn-primary w-100">Actualizar</button>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="aggregation">Agregación</label>
+                <select name="aggregation" id="aggregation" class="form-control">
+                    <option value="none">Ninguna</option>
+                    <option value="sum">Sumatoria</option>
+                    <option value="avg">Promedio</option>
+                </select>
+            </div>
+        </div>
         <canvas id="barChart"></canvas>
-        <canvas id="lineChart" class=""></canvas>
-        <canvas id="pieChart" class=""></canvas>
+        <canvas id="lineChart"></canvas>
+        <canvas id="pieChart"></canvas>
     </div>
 
 </div>
@@ -258,6 +271,21 @@
         return result;
     }
 
+    const sumAggregation = (labels, values) => {
+        console.log(labels, values)
+        const result = {};
+        labels.forEach((label, index) => {
+            // Check if the value already exists
+            if (!result.hasOwnProperty(label)) {
+                result[label] = values[index];
+            } else {
+                // Aggregate values
+                result[label] = result[label] + values[index];
+            }
+        })
+        return transformToChartData(result);
+    }
+
     $(document).ready(function () {
         // Get column names from metadata
         const columnNames = columnsData.map(column => {
@@ -282,6 +310,7 @@
         let currentGraphElement = 'barChart';
         let currentDimension = columnNames[0].data;
         let currentMetric = 'sum';
+        let currentAggregation = 'none';
         let currentChart;
 
         hideCharts();
@@ -354,6 +383,10 @@
             // Update metric
             currentMetric = this.value;
         });
+        $graphsContainer.on('change', '#aggregation', function () {
+            // Update aggregation
+            currentAggregation = this.value;
+        });
         $graphsContainer.on('change', '#graph-type', function () {
             // Update graph type
             currentGraphElement = this.value;
@@ -383,6 +416,12 @@
                 // Get dimension values
                 aLabels = data.map(column => column[currentDimension]);
                 aData = data.map(column => column[currentMetric]);
+                // Calculate aggregation if any
+                if (currentAggregation === 'sum') {
+                    const {labels: newLabels, data: newData} = sumAggregation(aLabels, aData);
+                    aLabels = newLabels;
+                    aData = newData;
+                }
             }
             // Change chart
             hideCharts();
@@ -405,7 +444,6 @@
     }
 
     const showChart = (chart) => {
-        console.log(`#${chart}`)
         $(`#${chart}`).show();
     }
 </script>

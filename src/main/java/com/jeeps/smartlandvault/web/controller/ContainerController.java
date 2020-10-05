@@ -13,6 +13,7 @@ import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
 import com.jeeps.smartlandvault.observatories.SharedObservatoriesForm;
+import com.jeeps.smartlandvault.observatories.UserObservatory;
 import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
@@ -411,6 +412,18 @@ public class ContainerController {
             dataContainer.setNewId();
             dataContainer.setName(String.format("%s - copia", dataContainer.getName()));
             dataContainer.setDuplicate(true);
+            dataContainer.setUserToken(userToken);
+            // Reset shared observatories
+            dataContainer.setSharedObservatories(new ArrayList<>());
+            // Change the observatory to the current user
+            try {
+                List<UserObservatory.ObservatoryDetails> userObs = observatoriesService.getObservatoriesByUserToken(userToken);
+                if (userObs.get(0) != null)
+                    dataContainer.setObservatory(userObs.get(0).getId());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             DataContainer newContainer = dataContainerRepository.save(dataContainer);
             // Duplicate inventory
             if (containerInventory != null) {

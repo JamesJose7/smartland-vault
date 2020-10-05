@@ -17,6 +17,10 @@ import java.util.List;
 public class ContainerFilterService {
     private static final Logger logger = LoggerFactory.getLogger(ContainerFilterService.class);
 
+    private static final int ALL = 0;
+    private static final int MERGE_TRUE = 1;
+    private static final int MERGE_FALSE = 2;
+
     @Autowired
     private ObservatoriesService observatoriesService;
     @Autowired
@@ -30,6 +34,8 @@ public class ContainerFilterService {
                 int obsId = observatory.getId();
                 dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalseAndObservatoryEquals(obsId));
             });
+            // Add shared containers
+            includeSharedContainers(dataContainers, userObservatories, MERGE_FALSE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -46,6 +52,8 @@ public class ContainerFilterService {
                 int obsId = observatory.getId();
                 dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndObservatoryEquals(obsId));
             });
+            // Add shared containers
+            includeSharedContainers(dataContainers, userObservatories, ALL);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -62,12 +70,44 @@ public class ContainerFilterService {
                 int obsId = observatory.getId();
                 dataContainers.addAll(dataContainerRepository.findAllByDeletedIsFalseAndMergeIsTrueAndObservatoryEquals(obsId));
             });
+            // Add shared containers
+            includeSharedContainers(dataContainers, userObservatories, MERGE_TRUE);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
         // Add public containers
         includePublicContainers(dataContainers);
         return dataContainers;
+    }
+
+    private void includeSharedContainers(List<DataContainer> dataContainers,
+                                         List<UserObservatory.ObservatoryDetails> observatories,
+                                         int type) {
+        // Iterate through observatories and get shared containers
+        List<DataContainer> sharedContainers = new ArrayList<>();
+        for (UserObservatory.ObservatoryDetails observatory : observatories) {
+            List<DataContainer> filteredContainers = new ArrayList<>();
+            switch (type) {
+                case ALL:
+                    filteredContainers =
+                            dataContainerRepository.findAllByDeletedIsFalseAndSharedObservatoriesContains(observatory.getId());
+                    break;
+                case MERGE_FALSE:
+                    filteredContainers =
+                            dataContainerRepository.findAllByDeletedIsFalseAndMergeIsFalseAndSharedObservatoriesContains(observatory.getId());
+                    break;
+                case MERGE_TRUE:
+                    filteredContainers =
+                            dataContainerRepository.findAllByDeletedIsFalseAndMergeIsTrueAndSharedObservatoriesContains(observatory.getId());
+                    break;
+            }
+            sharedContainers.addAll(filteredContainers);
+        }
+        // Add containers
+        sharedContainers.forEach(container -> {
+            if (!dataContainers.contains(container))
+                dataContainers.add(container);
+        });
     }
 
     private void includePublicContainers(List<DataContainer> dataContainers) {

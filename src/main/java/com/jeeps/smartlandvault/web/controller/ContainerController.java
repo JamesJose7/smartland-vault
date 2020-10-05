@@ -12,6 +12,7 @@ import com.jeeps.smartlandvault.nosql.license_type.LicenseTypeRepository;
 import com.jeeps.smartlandvault.nosql.table_file.TableFileService;
 import com.jeeps.smartlandvault.observatories.ObservatoriesService;
 import com.jeeps.smartlandvault.observatories.Observatory;
+import com.jeeps.smartlandvault.observatories.SharedObservatoriesForm;
 import com.jeeps.smartlandvault.rest_extraction.RestExtractorService;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventory;
 import com.jeeps.smartlandvault.sql.inventory.ContainerInventoryRepository;
@@ -37,6 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.jeeps.smartlandvault.util.GenericJsonMapper.getPropertiesFromTree;
 import static com.jeeps.smartlandvault.util.GenericJsonMapper.getSelectedTree;
@@ -445,6 +447,65 @@ public class ContainerController {
         }
 
         return String.format("redirect:/container/%s/%s", containerId, userToken);
+    }
+
+    @GetMapping("/container/share/{id}/{userToken}")
+    public String shareContainer(@PathVariable(name = "id") String containerId,
+                              @PathVariable("userToken") String userToken,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        // Get container
+        DataContainer dataContainer = dataContainerRepository.findById(containerId).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+            return "redirect:/" + userToken;
+        }
+
+        try {
+            // Get all containers
+            List<Observatory> observatories = observatoriesService.getObservatories();
+            // Remove container's observatory
+            observatories.removeIf(obs -> obs.getId() == dataContainer.getObservatory());
+            // Get shared containers
+            List<Integer> sharedObservatories = dataContainer.getSharedObservatories();
+            // Merge shared and unshared observatories
+            SharedObservatoriesForm sharedObservatoriesForm =
+                    new SharedObservatoriesForm(observatories, sharedObservatories, dataContainer.getId());
+
+            model.addAttribute("formUrl", contextPath + "/container/share/save/" + userToken);
+            model.addAttribute("sharedObservatoriesForm", sharedObservatoriesForm);
+            model.addAttribute("backUrl", String.format("/container/%s/%s", dataContainer.getId(), userToken));
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+
+        return "containers/share_container";
+    }
+
+    @PostMapping("/container/share/save/{userToken}")
+    public String saveSharedObservatories(@PathVariable("userToken") String userToken,
+                                     SharedObservatoriesForm sharedObservatoriesForm,
+                                     RedirectAttributes redirectAttributes) {
+        // Get ids from the shared containers
+        List<Integer> sharedObservatories = sharedObservatoriesForm.getObservatories().stream()
+                .filter(Observatory::isShared)
+                .map(Observatory::getId)
+                .collect(Collectors.toList());
+        // Get container and save the shared observatories
+        DataContainer dataContainer = dataContainerRepository.findById(sharedObservatoriesForm.getContainerId()).orElse(null);
+        if (dataContainer == null) {
+            redirectAttributes.addFlashAttribute("flash",
+                    new FlashMessage("El recurso seleccionado no existe", FlashMessage.Status.FAILURE));
+            return String.format("redirect:/%s", userToken);
+        }
+        dataContainer.setSharedObservatories(sharedObservatories);
+        dataContainerRepository.save(dataContainer);
+
+        redirectAttributes.addFlashAttribute("flash",
+                new FlashMessage("Se ha compartido el recurso exitosamente", FlashMessage.Status.SUCCESS));
+
+        return String.format("redirect:/container/%s/%s", sharedObservatoriesForm.getContainerId(), userToken);
     }
 
     @GetMapping("/container/edit/columns/{id}/{userToken}")

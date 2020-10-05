@@ -20,6 +20,7 @@ public class DataContainer {
     private String id;
     private String name;
     private int observatory;
+    private List<Integer> sharedObservatories = new ArrayList<>();
     private String userToken;
     private int year;
     private String fileUrl;
@@ -120,6 +121,14 @@ public class DataContainer {
 
     public void setObservatory(int observatory) {
         this.observatory = observatory;
+    }
+
+    public List<Integer> getSharedObservatories() {
+        return sharedObservatories;
+    }
+
+    public void setSharedObservatories(List<Integer> sharedObservatories) {
+        this.sharedObservatories = sharedObservatories;
     }
 
     public String getUserToken() {

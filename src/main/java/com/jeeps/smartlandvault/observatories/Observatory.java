@@ -19,6 +19,8 @@ public class Observatory {
 
     private String titulo;
 
+    private boolean shared;
+
     public int getId() {
         getIdFromUrl(this.urlApi);
         return id;
@@ -93,9 +95,19 @@ public class Observatory {
         this.titulo = titulo;
     }
 
+    public boolean isShared() {
+        return shared;
+    }
+
+    public void setShared(boolean shared) {
+        this.shared = shared;
+    }
+
     private void getIdFromUrl(String url) {
-        String[] split = url.split("/");
-        int id = Integer.parseInt(split[split.length - 1]);
-        setId(id);
+        if (url != null) {
+            String[] split = url.split("/");
+            int id = Integer.parseInt(split[split.length - 1]);
+            setId(id);
+        }
     }
 }

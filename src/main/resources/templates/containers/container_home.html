@@ -225,6 +225,19 @@
 
     /*]]>*/
 
+    const getPieChartColors = (n) => {
+        // Colors
+        const colorPalette = ['#d11141','#00b159','#00aedb','#f37735','#ffc425','#dc6900','#eb8c00','#e0301e','#a32020','#602320','#008744','#0057e7','#d62d20','#ffa700','#d9534f','#5bc0de','#5cb85c','#428bca'];
+        // Resulting array
+        let colors = [];
+        // Fill the array based on the data amount
+        for (let i = 0; i < n; i++) {
+            let color = colorPalette[i % colorPalette.length];
+            colors.push(color);
+        }
+        return colors;
+    }
+
     const countValuesRepetitions = (data, val) => {
         let counts = {}
         data.forEach(function (x) {
@@ -286,8 +299,8 @@
                 labels: labels,
                 datasets: [{
                     label: currentDimension,
-                    backgroundColor: 'rgba(255, 99, 132, .8)',
-                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(0,63,114, .9)',
+                    borderColor: 'rgb(0,63,114)',
                     data: sumValues
                 }]
             },
@@ -303,14 +316,15 @@
                 labels: labels,
                 datasets: [{
                     label: currentDimension,
-                    backgroundColor: 'rgba(255, 99, 132, .8)',
-                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(0,63,114, .8)',
+                    borderColor: 'rgb(0,63,114)',
                     data: sumValues
                 }]
             },
             options: {}
         });
         // Pie Chart
+        let pieColors = getPieChartColors(sumValues.length)
         let pieChartCtx = document.getElementById('pieChart').getContext('2d');
         let pieChart = new Chart(pieChartCtx, {
             type: 'pie',
@@ -318,8 +332,8 @@
                 labels: labels,
                 datasets: [{
                     label: currentDimension,
-                    backgroundColor: 'rgba(255, 99, 132, .8)',
-                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: pieColors,
+                    // borderColor: 'rgb(255, 99, 132)',
                     data: sumValues
                 }]
             },
@@ -377,6 +391,9 @@
             currentChart.data.datasets[0].data = aData;
             currentChart.data.datasets[0].label = currentDimension;
             currentChart.data.labels = aLabels;
+            // Change colors when pie chart is selected
+            if (currentGraphElement === 'pieChart')
+                currentChart.data.datasets[0].backgroundColor = getPieChartColors(aData.length);
             currentChart.update();
         }
     });

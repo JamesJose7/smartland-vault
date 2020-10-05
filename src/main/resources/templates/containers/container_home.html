@@ -215,6 +215,7 @@
         <canvas id="barChart"></canvas>
         <canvas id="lineChart"></canvas>
         <canvas id="pieChart"></canvas>
+        <a id="export-chart" download="grafica.png" href="" class="btn btn-outline-dark w-100 mt-3">Exportar gráfica</a>
     </div>
 
 </div>
@@ -383,7 +384,7 @@
                 datasets: [{
                     label: currentDimension,
                     backgroundColor: pieColors,
-                    // borderColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgb(255, 255, 255)',
                     data: sumValues
                 }]
             },
@@ -460,6 +461,13 @@
                 currentChart.data.datasets[0].backgroundColor = getPieChartColors(aData.length);
             currentChart.update();
         }
+
+        // Export chart
+        $('#export-chart').click(function () {
+            let url_base64jp = document.getElementById(currentGraphElement).toDataURL("image/png");
+            let a =  document.getElementById("export-chart");
+            a.href = url_base64jp;
+        });
     });
 
     const hideCharts = () => {

@@ -272,7 +272,6 @@
     }
 
     const sumAggregation = (labels, values) => {
-        console.log(labels, values)
         const result = {};
         labels.forEach((label, index) => {
             // Check if the value already exists
@@ -283,6 +282,28 @@
                 result[label] = result[label] + values[index];
             }
         })
+        return transformToChartData(result);
+    }
+
+    const avgAggregation = (labels, values) => {
+        const result = {};
+        // Accumulate values in arrays
+        labels.forEach((label, index) => {
+            // Check if the value already exists
+            if (!result.hasOwnProperty(label)) {
+                result[label] = [values[index]];
+            } else {
+                // Accumulate values
+                result[label].push(values[index]);
+            }
+        })
+        // Calculate averages
+        Object.entries(result).forEach(([key, value]) => {
+            const sum = value.reduce((a, b) => a + b, 0);
+            const avg = (sum / value.length) || 0;
+            result[key] = avg;
+        });
+
         return transformToChartData(result);
     }
 
@@ -419,6 +440,10 @@
                 // Calculate aggregation if any
                 if (currentAggregation === 'sum') {
                     const {labels: newLabels, data: newData} = sumAggregation(aLabels, aData);
+                    aLabels = newLabels;
+                    aData = newData;
+                } else if (currentAggregation === 'avg') {
+                    const {labels: newLabels, data: newData} = avgAggregation(aLabels, aData);
                     aLabels = newLabels;
                     aData = newData;
                 }

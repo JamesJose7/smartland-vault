@@ -74,6 +74,7 @@
             </tbody>
         </table>
     </div>
+    <div class="mt-5"></div>
 
     <div class="modal fade" tabindex="-1" id="delete-modal">
         <div class="modal-dialog modal-dialog-centered">
@@ -98,6 +99,7 @@
 </div>
 
 <div th:replace="layout :: scripts"></div>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
     /*<![CDATA[*/
 
@@ -112,6 +114,11 @@
         $("#modal-delete-button").attr("href", `${contextPath}/container/${selectedId}/remove/${userToken}?redirect=merge`);
         $("#dataset-name").text(selectedName);
     });
+
+    $(document).ready( function () {
+        // Create data table
+        $('#table-container').DataTable()
+    } );
 </script>
 </body>
 </html>

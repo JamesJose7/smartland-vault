@@ -117,7 +117,25 @@
 
     $(document).ready( function () {
         // Create data table
-        $('#table-container').DataTable()
+        $('#table-container').DataTable({
+            language: {
+                "emptyTable":     "No existen recursos disponibles",
+                "info":           "Mostrando _START_ hasta _END_ de _TOTAL_ recursos",
+                "infoEmpty":      "Mostrando 0 hasta 0 de 0 recursos",
+                "infoFiltered":   "(Filtrado de _MAX_ recursos totales)",
+                "lengthMenu":     "Mostrar _MENU_ recursos",
+                "loadingRecords": "Cargando...",
+                "processing":     "Procesando...",
+                "search":         "Buscar:",
+                "zeroRecords":    "No se ha encontrado ningún recurso",
+                "paginate": {
+                    "first":      "Primero",
+                    "last":       "Último",
+                    "next":       "Siguiente",
+                    "previous":   "Atrás"
+                },
+            }
+        })
     } );
 </script>
 </body>

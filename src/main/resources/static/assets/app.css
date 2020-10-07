@@ -251,6 +251,14 @@ a.link {
     color: rgba(50,50,50, 0.26);
 }
 
+.container-active-full {
+    color: rgba(92,184,92, 1);
+}
+
+.container-inactive-full {
+    color: rgba(50,50,50, 1);
+}
+
 .tools-button {
     position: absolute;
     top: 0;

@@ -2,6 +2,7 @@ package com.jeeps.smartlandvault.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class TemplateUtils {
 
@@ -11,6 +12,17 @@ public class TemplateUtils {
         if (date == null) return "";
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
         return dateFormat.format(date);
+    }
+
+    public static String formatShared(List<Integer> sharedObs) {
+        switch (sharedObs.size()) {
+            case 0:
+                return "No compartido";
+            case 1:
+                return "1 Observatorio";
+            default:
+                return String.format("%d Observatorios", sharedObs.size());
+        }
     }
 
     public static String getFileIcon(String extension) {

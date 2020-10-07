@@ -26,8 +26,9 @@
             <tr>
                 <th scope="col">Nombre</th>
                 <th scope="col"># datos</th>
-                <th scope="col">Origen</th>
-                <th scope="col">URL</th>
+                <th scope="col">Creado en</th>
+                <th scope="col">Acceso</th>
+                <th scope="col">Compartido</th>
                 <th scope="col"></th>
             </tr>
             </thead>
@@ -35,9 +36,15 @@
             <tr th:each="dataContainer : ${dataContainers}">
                 <td th:text="${dataContainer.name}"></td>
                 <td th:text="${dataContainer.dataCount}"></td>
-                <td th:text="${dataContainer.originType}"></td>
-                <td><a th:href="${dataContainer.sourceUrl}" th:text="${dataContainer.sourceUrl}" class="link"
-                       target="_blank"></a></td>
+                <td th:text="${T(com.jeeps.smartlandvault.util.TemplateUtils).formatDate(dataContainer.dateCreated)}"></td>
+                <td>
+                    <p th:if="${dataContainer.publicContainer}" class="container-active container-active-full">
+                        Público <i class="material-icons">lock_open</i>
+                    </p>
+                    <p th:unless="${dataContainer.publicContainer}" class="container-inactive container-inactive-full">
+                        Privado <i class="material-icons">lock</i></p>
+                </td>
+                <td th:text="${T(com.jeeps.smartlandvault.util.TemplateUtils).formatShared(dataContainer.sharedObservatories)}" class=""></td>
                 <td class="text-right">
                     <a href="" class="btn btn-icon btn-table edit-color" data-toggle="tooltip" data-placement="left"
                        title="Editar"

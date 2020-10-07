@@ -105,7 +105,7 @@ public class ContainerFilterService {
         }
         // Add containers
         sharedContainers.forEach(container -> {
-            if (!dataContainers.contains(container))
+            if (!containsContainer(dataContainers, container))
                 dataContainers.add(container);
         });
     }
@@ -113,8 +113,12 @@ public class ContainerFilterService {
     private void includePublicContainers(List<DataContainer> dataContainers) {
         List<DataContainer> publicContainers = dataContainerRepository.findAllByDeletedIsFalseAndPublicContainerIsTrue();
         publicContainers.forEach(container -> {
-            if (!dataContainers.contains(container))
+            if (!containsContainer(dataContainers, container))
                 dataContainers.add(container);
         });
+    }
+
+    private boolean containsContainer(List<DataContainer> dataContainers, DataContainer container) {
+        return dataContainers.stream().anyMatch(o -> o.getId().equals(container.getId()));
     }
 }
